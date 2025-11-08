@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JukeBox - Player</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #000; color: #fff; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; }
+  #player { width: 90%; max-width: 980px; height: 540px; border: none; }
+  .info { position: absolute; top: 8px; left: 12px; }
+</style>
+</head>
+<body>
+  <div class="info">JukeBox - Lecteur</div>
+  <iframe id="player" allow="autoplay; encrypted-media"></iframe>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const cafe = params.get('café') || params.get('cafe') || 'default';
+  const key = params.get('key');
+  const player = document.getElementById('player');
+
+  if (!key) {
+    document.body.innerHTML = '<p style="color:white;padding:1em;">Clé manquante.</p>';
+    throw new Error('missing key');
+  }
+
+  async function loadNext() {
+    const peek = await fetch(`/peek?caf%C3%A9=${encodeURIComponent(cafe)}`);
+    const data = await peek.json();
+    if (!data.next) {
+      // playlist vide -> play waiting sequence
+      // set a simple static waiting video and then a random jingle (example placeholders)
+      player.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1'; // replace with real waiting video
+      // do not pop anything
+      return;
+    }
+
+    // For YouTube Music links, extract video id or use the provided link in an embed-friendly way
+    const link = data.next.link;
+    const videoIdMatch = link.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+    let embedUrl = link;
+    if (videoIdMatch) embedUrl = `https://www.youtube.com/embed/${videoIdMatch[1]}?autoplay=1`;
+    else if (link.includes('music.youtube.com')) {
+      // fallback: open the raw link (might open YouTube music in embed limitations)
+      embedUrl = link;
+    }
+
+    player.src = embedUrl;
+  }
+
+  // When the iframe URL changes to a youtube video, we can't reliably detect "ended" due to cross-origin.
+  // Workaround: use a timer estimate (not perfect) or rely on the bar operator to press "Next".
+
+  // Simple poll to check if the iframe was changed and the user wants to pop the played track
+  document.addEventListener('keydown', async (e) => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      // pop current
+      await fetch(`/pop?caf%C3%A9=${encodeURIComponent(cafe)}&key=${encodeURIComponent(key)}`, { method: 'POST' });
+      await loadNext();
+    }
+  });
+
+  // initial load
+  loadNext();
+</script>
+</body>
+</html>
