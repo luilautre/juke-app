@@ -3,42 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JukeBox Café</title>
+<title>JukeBox Café - Ajouter</title>
 <style>
-  body { font-family: system-ui, sans-serif; text-align:center; padding:2em; background:#faf6f0; }
-  input { width: 90%; max-width:400px; padding:0.8em; margin:1em 0; border:2px solid #d66b00; border-radius:10px; font-size:1em; }
+  body { font-family: system-ui, sans-serif; text-align:center; background:#faf6f0; padding:2em; }
+  input { width:90%; max-width:400px; padding:0.8em; margin:1em 0; border:2px solid #d66b00; border-radius:10px; font-size:1em; }
   button { background:#d66b00; color:#fff; border:none; padding:0.8em 2em; border-radius:10px; font-size:1em; cursor:pointer; }
   button:hover { background:#ff7f00; }
-  iframe { width: 90%; max-width:560px; height:315px; margin-top:2em; border:none; }
+  iframe { width:100%; height:600px; border:1px solid #d66b00; border-radius:10px; margin-top:1em; }
+  #msg { margin-top:0.5em; color:#555; font-size:0.9em; }
 </style>
 </head>
 <body>
   <h1>🎵 JukeBox Café</h1>
-  <input id="search" type="text" placeholder="ex : Daft Punk – Get Lucky">
+  <p>Recherche ta musique directement dans l’iframe :</p>
+
+  <!-- Champ pour coller le lien copié dans l'iframe -->
+  <input id="link" type="url" placeholder="Colle le lien YouTube Music ici">
   <br>
-  <button onclick="searchYT()">Rechercher et jouer</button>
-  <br><br>
-  <iframe id="player"></iframe>
+  <button onclick="addMusic()">🎶 Ajouter au jukebox</button>
+  <p id="msg"></p>
+
+  <!-- Iframe YouTube Music pour rechercher directement -->
+  <iframe id="ytMusic" src="https://music.youtube.com" allowfullscreen></iframe>
 
 <script>
-function searchYT() {
-  const query = encodeURIComponent(document.getElementById('search').value.trim());
-  if (!query) return;
+  const params = new URLSearchParams(window.location.search);
+  const cafe = params.get('café') || 'default';
+  const msg = document.getElementById('msg');
 
-  // Crée un lien de recherche sur YouTube Music
-  const searchUrl = `https://music.youtube.com/search?q=${query}`;
+  async function addMusic() {
+    const link = document.getElementById('link').value.trim();
+    if (!link.startsWith('http')) { msg.textContent = '⚠️ Entre un lien YouTube valide.'; return; }
 
-  // Option 1 : extraire premier résultat via iframe YouTube standard
-  // Comme YouTube Music n’autorise pas directement l’iframe, tu peux utiliser l’URL standard YouTube
-  // Exemple basique : recherche -> prends le premier ID (ici simulation)
-  // Pour un vrai projet, tu aurais besoin d’un serveur qui récupère l’ID vidéo via l’API YouTube
-
-  // Exemple d’ID fixe pour test
-  const videoId = 'dQw4w9WgXcQ'; // remplacer par l’ID du premier résultat de la recherche
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-
-  document.getElementById('player').src = embedUrl;
-}
+    try {
+      const res = await fetch(`/add?café=${encodeURIComponent(cafe)}&link=${encodeURIComponent(link)}`);
+      if (res.ok) {
+        msg.textContent = '✅ Ta musique a été ajoutée au jukebox !';
+        document.getElementById('link').value = '';
+      } else {
+        msg.textContent = '❌ Erreur lors de l’ajout.';
+      }
+    } catch(e) {
+      msg.textContent = '⚠️ Erreur réseau.';
+    }
+  }
 </script>
 </body>
 </html>
