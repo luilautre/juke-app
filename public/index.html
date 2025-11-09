@@ -55,7 +55,7 @@ const msg = document.getElementById('msg');
 
 function searchYTMusic() {
   const query = encodeURIComponent(document.getElementById('search').value.trim());
-  if (!query) { msg.textContent = '⚠️ Entre un terme de recherche.'; return; }
+  if (!query) { window.open(`https://music.youtube.com/`, '_blank', 'width=1000,height=700'); return; }
   // Ouvre la recherche dans une nouvelle fenêtre
   window.open(`https://music.youtube.com/search?q=${query}`, '_blank', 'width=1000,height=700');
 }
