@@ -16,11 +16,6 @@
     align-items: center;
     overflow: hidden;
   }
-  iframe {
-    width: 100vw;
-    height: 100vh;
-    border: none;
-  }
   #info {
     position: absolute;
     top: 10px;
@@ -31,58 +26,61 @@
     padding: 0.5em 1em;
     border-radius: 5px;
   }
+  #player {
+    width: 100vw;
+    height: 100vh;
+  }
 </style>
 </head>
 <body>
 <div id="info">JukeBox Café - Player</div>
+<div id="player"></div>
 
-<iframe id="player" 
-        allow="autoplay; encrypted-media; fullscreen" 
-        allowfullscreen
-        src="">
-</iframe>
-
+<!-- Script API YouTube -->
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
 const params = new URLSearchParams(window.location.search);
 const cafe = params.get('café') || 'default';
 const key = params.get('key');
-const player = document.getElementById('player');
 
-if (!key) {
-  document.body.innerHTML = '<p style="color:white;padding:1em;">Clé manquante !</p>';
-  throw new Error('Missing key');
+let player;
+
+// Chargé automatiquement par l'API YouTube
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player('player', {
+    width: '100%',
+    height: '100%',
+    playerVars: { autoplay: 1, controls: 1 },
+    events: {
+      onReady: loadNext,
+      onStateChange: onPlayerStateChange
+    }
+  });
 }
 
-// Récupère le prochain morceau de la playlist
+// Quand la vidéo se termine
+async function onPlayerStateChange(event) {
+  if (event.data === YT.PlayerState.ENDED) {
+    // On supprime le morceau joué
+    await fetch(`/pop?caf%C3%A9=${encodeURIComponent(cafe)}&key=${encodeURIComponent(key)}`, { method: 'POST' });
+    // Puis on charge le suivant
+    loadNext();
+  }
+}
+
+// Charge la prochaine vidéo
 async function loadNext() {
   const peek = await fetch(`/peek?caf%C3%A9=${encodeURIComponent(cafe)}`);
   const data = await peek.json();
 
-  if (!data.next) {
-    // Playlist vide → vidéo d’attente
-    player.src = 'https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1'; // remplacer par vidéo d’attente
-    return;
+  let videoId = 'dQw4w9WgXcQ'; // par défaut (attente)
+  if (data.next && data.next.link) {
+    const match = data.next.link.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+    if (match) videoId = match[1];
   }
 
-  const link = data.next.link;
-  const videoIdMatch = link.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-  let embedUrl = link;
-
-  if (videoIdMatch) embedUrl = `https://www.youtube.com/embed/${videoIdMatch[1]}?autoplay=1`;
-
-  player.src = embedUrl;
+  player.loadVideoById(videoId);
 }
-
-// Pop le morceau actuel et charge le suivant (espace ou entrée)
-document.addEventListener('keydown', async (e) => {
-  if (e.key === ' ' || e.key === 'Enter') {
-    await fetch(`/pop?caf%C3%A9=${encodeURIComponent(cafe)}&key=${encodeURIComponent(key)}`, { method: 'POST' });
-    loadNext();
-  }
-});
-
-// Chargement initial
-loadNext();
 </script>
 </body>
 </html>
