@@ -20,13 +20,12 @@ function ensureCafe(name) {
   return cafes[name];
 }
 
-// Render the add/select page: public/index.html (static)
-app.get('/', (req, res) => {
+
+app.get('/', (req, res) => {// Render the add/select page: public/index.html (static)
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Endpoint to receive shared links (mobile PWA share target or manual GET)
-app.get('/add', (req, res) => {
+app.get('/add', (req, res) => {// Endpoint to receive shared links (mobile PWA share target or manual GET)
   // support both share_target parameters (url=...) and direct link param
   const cafe = req.query.café || req.query.cafe || 'default';
   const link = req.query.link || req.query.url || req.query.text || req.query.title;
@@ -48,22 +47,19 @@ app.get('/add', (req, res) => {
   res.json({ ok: true, cafe, item });
 });
 
-// Simple API to view playlist (for the bar / debug)
-app.get('/playlist', (req, res) => {
+app.get('/playlist', (req, res) => {// Simple API to view playlist (for the bar / debug)
   const cafe = req.query.café || req.query.cafe || 'default';
   const store = ensureCafe(cafe);
   res.json({ cafe, playlist: store.playlist });
 });
 
-// Endpoint to get the play key for a cafe (should be authenticated in real app)
-app.get('/get-play-key', (req, res) => {
+app.get('/get-play-key', (req, res) => {// Endpoint to get the play key for a cafe (should be authenticated in real app)
   const cafe = req.query.café || req.query.cafe || 'default';
   const store = ensureCafe(cafe);
   res.json({ cafe, key: store.key });
 });
 
-// Player page (requires key)
-app.get('/play', (req, res) => {
+app.get('/play', (req, res) => {// Player page (requires key)
   const cafe = req.query.café || req.query.cafe || 'default';
   const key = req.query.key;
   const store = ensureCafe(cafe);
@@ -71,8 +67,7 @@ app.get('/play', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'play.html'));
 });
 
-// API to pop first item (called by the player when a track ends)
-app.post('/pop', (req, res) => {
+app.post('/pop', (req, res) => {// API to pop first item (called by the player when a track ends)
   const cafe = req.query.café || req.query.cafe || 'default';
   const key = req.query.key;
   const store = ensureCafe(cafe);
@@ -81,8 +76,7 @@ app.post('/pop', (req, res) => {
   res.json({ ok: true, item });
 });
 
-// API to peek first item
-app.get('/peek', (req, res) => {
+app.get('/peek', (req, res) => {// API to peek first item
   const cafe = req.query.café || req.query.cafe || 'default';
   const store = ensureCafe(cafe);
   res.json({ cafe, next: store.playlist[0] || null });
