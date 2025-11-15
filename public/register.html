@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Créer mon Juke‑Box</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --card: #151820;
+      --accent: #5c7cfa;
+      --text: #f2f4f8;
+      --muted: #8b93a3;
+      --error: #ff6b6b;
+    }
+    body {
+      margin: 0;
+      font-family: Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    p {
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    input, select {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      border: 1px solid #242833;
+      background: #0f1117;
+      color: var(--text);
+      font-size: 1rem;
+    }
+    input:focus, select:focus {
+      outline: 2px solid var(--accent);
+    }
+    .cta {
+      width: 100%;
+      display: block;
+      text-align: center;
+      padding: 16px;
+      background: var(--accent);
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      text-decoration: none;
+      margin-top: 10px;
+    }
+    .qr-preview {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      background: #0f1117;
+      border-radius: 14px;
+      border: 1px dashed #2b2f3a;
+    }
+    .qr-preview p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Créer mon juke‑box</h1>
+    <p>Configurez votre espace et générez un QR code que vos clients pourront scanner.</p>
+
+    <label for="name">Nom du lieu</label>
+    <input id="name" type="text" placeholder="Ex : Bar Le Moderne" />
+
+    <label for="style">Ambiance musicale</label>
+    <select id="style">
+      <option>Libre</option>
+      <option>Années 80</option>
+      <option>Electro / Chill</option>
+      <option>Rock / Soft Rock</option>
+      <option>Pop actuelle</option>
+      <option>Playlist personnalisée</option>
+    </select>
+
+    <label for="limit">Limite de choix par client</label>
+    <select id="limit">
+      <option>Illimité</option>
+      <option>1 musique / 10 min</option>
+      <option>1 musique / 30 min</option>
+      <option>2 musiques / heure</option>
+    </select>
+
+    <a href="#" class="cta">Générer mon QR code</a>
+
+    <div class="qr-preview">
+      <p>Le QR code apparaîtra ici après configuration.</p>
+    </div>
+  </div>
+</body>
+</html>
