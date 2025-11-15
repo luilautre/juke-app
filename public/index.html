@@ -1,53 +1,120 @@
 <!DOCTYPE html>
-<html lang="fr"><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Juke-app</title>
-<meta name="keywords" content="juke-app,jukebox,juke-box,musique,café,cafe,bar,qrCodes">
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    background: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
-  #inscrire {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-family: system-ui, sans-serif;
-  }
-button {
-    background: #d66b00;
-    color: #fff;
-    border: none;
-    padding: 0.8em 2em;
-    border-radius: 10px;
-    font-size: 1em;
-    cursor: pointer;
-    margin: 0.5em;
-  }
-  button:hover { background: #ff7f00; }
-  #msg { font-size: 0.9em; color: #555; margin-top: 0.5em; }
-</style>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juke‑App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --card: #151820;
+      --accent: #5c7cfa;
+      --text: #f2f4f8;
+      --muted: #8b93a3;
+    }
+    body {
+      margin: 0;
+      font-family: Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .cta-header {
+      padding: 10px 18px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .hero {
+      padding: 120px 40px;
+      max-width: 900px;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+    .cta {
+      padding: 16px 30px;
+      background: var(--accent);
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .features {
+      margin-top: 120px;
+      padding: 0 40px 80px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 30px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.3rem;
+    }
+    .card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+  </style>
 </head>
 <body>
-<div id="inscrire"><button onclick="register()">Inscrire mon juke-box</button></div>
-<div id="header">Le juke-app est un logiciel de playlist utilisant YouTube music :<br> dans <b>votre</b>
- café ou bar des QRcodes sur les tables pour laisser choisir vos clients
- parmi toutes les musiques, un style, ou une playlist (choisie par vous 
-!)</div>
-<script>
-function register() {
-  window.open(`https://juke-app-mh0q.onrender.com/register`, '_blank', 'width=1000,height=700');
-}
-</script>
+  <header>
+    <div class="logo">Juke‑App</div>
+    <a href="#" class="cta-header">Connexion</a>
+  </header>
 
+  <section class="hero">
+    <h1>Transformez vos tables en un jukebox moderne</h1>
+    <p>Vos clients scannent un simple QR code et choisissent la musique directement depuis leur smartphone. Simple, instantané et sans installation.</p>
+    <a href="#" class="cta">Créer mon juke‑box</a>
+  </section>
 
-</body></html>
+  <section class="features">
+    <div class="card">
+      <h3>Installation rapide</h3>
+      <p>Générez un QR code en un clic. Placez‑le sur vos tables et c’est terminé.</p>
+    </div>
+    <div class="card">
+      <h3>Contrôle total</h3>
+      <p>Choisissez les playlists disponibles et gardez la main sur l’ambiance.</p>
+    </div>
+    <div class="card">
+      <h3>Interface mobile</h3>
+      <p>Une expérience fluide pensée pour les smartphones, sans application à installer.</p>
+    </div>
+    <div class="card">
+      <h3>Favorise l’engagement</h3>
+      <p>Vos clients participent à l’ambiance de votre lieu, et ils adorent.</p>
+    </div>
+  </section>
+</body>
+</html>
