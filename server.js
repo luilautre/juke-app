@@ -21,8 +21,16 @@ function ensureCafe(name) {
 }
 
 
-app.get('/', (req, res) => {// Render the add/select page: public/index.html (static)
+app.get('/ajouter', (req, res) => {// Render the add/select page: public/ajouter.html (static)
+  res.sendFile(path.join(__dirname, 'public', 'ajouter.html'));
+});
+
+app.get('/', (req, res) => {// Render the index page: public/index.html (static)
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/register', (req, res) => {// Render the add/select page: public/ajouter.html (static)
+  res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
 
 app.get('/add', (req, res) => {// Endpoint to receive shared links (mobile PWA share target or manual GET)
