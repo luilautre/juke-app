@@ -1,27 +1,29 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
+<html lang="fr"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JukeBox Café</title>
+<title>Juke-app</title>
+<meta name="keywords" content="juke-app,jukebox,juke-box,musique,café,cafe,bar,qrCodes">
 <style>
-  body {
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  #inscrire {
+    position: absolute;
+    top: 10px;
+    left: 10px;
     font-family: system-ui, sans-serif;
-    background: #fdf8f3;
-    text-align: center;
-    padding: 2em;
   }
-  h1 { color: #d66b00; }
-  input {
-    width: 90%;
-    max-width: 400px;
-    padding: 0.8em;
-    margin: 1em 0;
-    border: 2px solid #d66b00;
-    border-radius: 10px;
-    font-size: 1em;
-  }
-  button {
+button {
     background: #d66b00;
     color: #fff;
     border: none;
@@ -36,47 +38,16 @@
 </style>
 </head>
 <body>
-  <h1>🎵 JukeBox Café</h1>
-  <p>Recherche ta musique sur YouTube Music :</p>
-
-  <input id="search" type="text" placeholder="ex : Daft Punk – Get Lucky">
-  <br>
-  <button onclick="searchYTMusic()">🔍 Rechercher sur YouTube Music</button>
-  <br><br>
-  <input id="link" type="url" placeholder="Colle le lien ici">
-  <br>
-  <button onclick="addMusic()">🎶 Ajouter au jukebox</button>
-  <p id="msg"></p>
-
+<div id="inscrire"><button onclick="register()">Inscrire mon juke-box</button></div>
+<div id="header">Le juke-app est un logiciel de playlist utilisant YouTube music :<br> dans <b>votre</b>
+ café ou bar des QRcodes sur les tables pour laisser choisir vos clients
+ parmi toutes les musiques, un style, ou une playlist (choisie par vous 
+!)</div>
 <script>
-const params = new URLSearchParams(window.location.search);
-const cafe = params.get('café') || 'default';
-const msg = document.getElementById('msg');
-
-function searchYTMusic() {
-  const query = encodeURIComponent(document.getElementById('search').value.trim());
-  if (!query) { window.open(`https://music.youtube.com/`, '_blank', 'width=1000,height=700'); return; }
-  // Ouvre la recherche dans une nouvelle fenêtre
-  window.open(`https://music.youtube.com/search?q=${query}`, '_blank', 'width=1000,height=700');
-}
-
-async function addMusic() {
-  const link = document.getElementById('link').value.trim();
-  if (!link.startsWith('http')) { msg.textContent = '⚠️ Entre un lien YouTube valide.'; return; }
-
-  try {
-    const res = await fetch(`/add?café=${encodeURIComponent(cafe)}&link=${encodeURIComponent(link)}`);
-    if (res.ok) {
-      msg.textContent = '✅ Ta musique a été ajoutée au jukebox !';
-      document.getElementById('link').value = '';
-      document.getElementById('search').value = '';
-    } else {
-      msg.textContent = '❌ Erreur lors de l’ajout.';
-    }
-  } catch (e) {
-    msg.textContent = '⚠️ Erreur réseau.';
-  }
+function register() {
+  window.open(`https://juke-app-mh0q.onrender.com/register`, '_blank', 'width=1000,height=700');
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
