@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Paramètres du café</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    padding: 2rem;
+    max-width: 600px;
+    margin: auto;
+  }
+  input, button {
+    padding: 0.7rem;
+    font-size: 1rem;
+    margin-top: 0.5rem;
+    width: 100%;
+  }
+  .card {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 10px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Paramètres du Juke-Box</h1>
+
+<input id="cafeInput" placeholder="Nom du café (ex : bar-lille-centre)">
+<button id="loadBtn">Charger</button>
+
+<div id="panel" class="card" style="display:none;">
+  <p><b>Clé actuelle :</b> <code id="currentKey"></code></p>
+
+  <h3>Définir une nouvelle clé (choisie par le gérant)</h3>
+  <input id="newKey" placeholder="ex : MONBAR2025">
+  <button id="applyBtn" style="background:#1976d2;color:#fff;">Mettre à jour</button>
+
+  <p style="margin-top:1rem;font-size:0.9rem;">
+    ℹ️ Cette clé est permanente et restera après redémarrage du serveur.
+  </p>
+
+</div>
+
+<script>
+document.getElementById("loadBtn").onclick = async () => {
+  const cafe = document.getElementById("cafeInput").value.trim();
+  if (!cafe) return alert("Nom obligatoire");
+
+  const res = await fetch(`/get-play-key?cafe=${encodeURIComponent(cafe)}`);
+  const data = await res.json();
+
+  document.getElementById("panel").style.display = "block";
+  document.getElementById("currentKey").textContent = data.key || "(aucune clé)";
+  
+  document.getElementById("applyBtn").onclick = async () => {
+    const key = document.getElementById("newKey").value.trim();
+    if (!key) return alert("Clé obligatoire");
+
+    const r = await fetch(`/set-play-key?cafe=${encodeURIComponent(cafe)}&key=${encodeURIComponent(key)}`, {
+      method: "POST"
+    });
+    const d = await r.json();
+
+    document.getElementById("currentKey").textContent = d.key;
+    alert("Clé mise à jour !");
+  };
+};
+</script>
+
+</body>
+</html>
