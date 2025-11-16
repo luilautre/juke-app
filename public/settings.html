@@ -70,6 +70,31 @@ document.getElementById("loadBtn").onclick = async () => {
   };
 };
 </script>
+<script>
+// Récupère le café depuis l'URL (ex: ?cafe=mon-cafe)
+const urlParams = new URLSearchParams(window.location.search);
+const cafe = urlParams.get('cafe') || 'default';
+
+const qrCacheKey = `qr-${cafe}`;
+const qrCanvas = document.getElementById('qrCanvas');
+
+if (qrCanvas) { // si le canvas existe sur la page
+  let cached = localStorage.getItem(qrCacheKey);
+
+  if (cached) {
+    const img = new Image();
+    img.src = cached;
+    img.onload = () => {
+      const ctx = qrCanvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, qrCanvas.width, qrCanvas.height);
+    };
+  } else {
+    // Génération simple du QR code (fonction qrSimple déjà existante)
+    qrSimple(`${location.origin}/ajouter.html?cafe=${encodeURIComponent(cafe)}`, 256, qrCanvas);
+    localStorage.setItem(qrCacheKey, qrCanvas.toDataURL());
+  }
+}
+</script>
 
 </body>
 </html>
