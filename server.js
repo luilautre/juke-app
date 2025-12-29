@@ -15,30 +15,39 @@ const speedInsightsScript = `
 <script defer src="/_vercel/speed-insights/script.js"><\/script>
 `;
 
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware to inject Speed Insights into HTML responses
-const originalSendFile = express.response.sendFile;
-express.response.sendFile = function(filepath, options, callback) {
-  if (filepath.endsWith('.html')) {
-    // Read the file and inject Speed Insights script before closing body tag
-    fs.readFile(filepath, 'utf-8', (err, data) => {
-      if (err) return originalSendFile.call(this, filepath, options, callback);
-      
-      // Inject Speed Insights script before closing body tag
-      const modifiedHtml = data.replace('</body>', speedInsightsScript + '</body>');
-      
-      this.set('Content-Type', 'text/html; charset=utf-8');
-      this.send(modifiedHtml);
-      
-      if (callback) callback();
-    });
+// Middleware to inject Speed Insights for HTML responses
+app.use((req, res, next) => {
+  // For HTML files, intercept and modify before sending
+  if (req.path === '/' || req.path.endsWith('.html')) {
+    const filepath = path.join(__dirname, 'public', req.path === '/' ? 'index.html' : req.path);
+    
+    // Check if file exists
+    if (fs.existsSync(filepath)) {
+      fs.readFile(filepath, 'utf-8', (err, data) => {
+        if (err) return next();
+        
+        // Inject Speed Insights script if not already present
+        if (!data.includes('window.si')) {
+          data = data.replace('</body>', speedInsightsScript + '</body>');
+        }
+        
+        res.set('Content-Type', 'text/html; charset=utf-8');
+        res.send(data);
+        return;
+      });
+    } else {
+      return next();
+    }
   } else {
-    return originalSendFile.call(this, filepath, options, callback);
+    next();
   }
-};
+});
+
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 // In-memory storage (replace with DB for production)
@@ -53,15 +62,36 @@ function ensureCafe(name) {
 
 
 app.get('/ajouter', (req, res) => {// Render the add/select page: public/ajouter.html (static)
-  res.sendFile(path.join(__dirname, 'public', 'ajouter.html'));
+  fs.readFile(path.join(__dirname, 'public', 'ajouter.html'), 'utf-8', (err, data) => {
+    if (err) return res.status(500).send('Error loading page');
+    if (!data.includes('window.si')) {
+      data = data.replace('</body>', speedInsightsScript + '</body>');
+    }
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.send(data);
+  });
 });
 
 app.get('/', (req, res) => {// Render the index page: public/index.html (static)
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  fs.readFile(path.join(__dirname, 'public', 'index.html'), 'utf-8', (err, data) => {
+    if (err) return res.status(500).send('Error loading page');
+    if (!data.includes('window.si')) {
+      data = data.replace('</body>', speedInsightsScript + '</body>');
+    }
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.send(data);
+  });
 });
 
 app.get('/register', (req, res) => {// Render the add/select page: public/ajouter.html (static)
-  res.sendFile(path.join(__dirname, 'public', 'register.html'));
+  fs.readFile(path.join(__dirname, 'public', 'register.html'), 'utf-8', (err, data) => {
+    if (err) return res.status(500).send('Error loading page');
+    if (!data.includes('window.si')) {
+      data = data.replace('</body>', speedInsightsScript + '</body>');
+    }
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.send(data);
+  });
 });
 
 app.get('/add', (req, res) => {// Endpoint to receive shared links (mobile PWA share target or manual GET)
@@ -103,7 +133,14 @@ app.get('/play', (req, res) => {// Player page (requires key)
   const key = req.query.key;
   const store = ensureCafe(cafe);
   if (!key || key !== store.key) return res.status(403).send('Forbidden');
-  res.sendFile(path.join(__dirname, 'public', 'play.html'));
+  fs.readFile(path.join(__dirname, 'public', 'play.html'), 'utf-8', (err, data) => {
+    if (err) return res.status(500).send('Error loading page');
+    if (!data.includes('window.si')) {
+      data = data.replace('</body>', speedInsightsScript + '</body>');
+    }
+    res.set('Content-Type', 'text/html; charset=utf-8');
+    res.send(data);
+  });
 });
 
 app.post('/pop', (req, res) => {// API to pop first item (called by the player when a track ends)
