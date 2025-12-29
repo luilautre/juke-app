@@ -2,13 +2,44 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Vercel Speed Insights tracking script
+const speedInsightsScript = `
+<script>
+  window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"><\/script>
+`;
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware to inject Speed Insights into HTML responses
+const originalSendFile = express.response.sendFile;
+express.response.sendFile = function(filepath, options, callback) {
+  if (filepath.endsWith('.html')) {
+    // Read the file and inject Speed Insights script before closing body tag
+    fs.readFile(filepath, 'utf-8', (err, data) => {
+      if (err) return originalSendFile.call(this, filepath, options, callback);
+      
+      // Inject Speed Insights script before closing body tag
+      const modifiedHtml = data.replace('</body>', speedInsightsScript + '</body>');
+      
+      this.set('Content-Type', 'text/html; charset=utf-8');
+      this.send(modifiedHtml);
+      
+      if (callback) callback();
+    });
+  } else {
+    return originalSendFile.call(this, filepath, options, callback);
+  }
+};
+
 
 // In-memory storage (replace with DB for production)
 // Structure: { cafeName: { playlist: [ {link, addedAt, id} ], key } }
