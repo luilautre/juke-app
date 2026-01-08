@@ -51,6 +51,21 @@ function ensureCafe(name) {
   return cafes[name];
 }
 
+function detectSource(link) {
+  if (!link || typeof link !== 'string') return 'unknown';
+
+  if (
+    link.includes('youtube.com') ||
+    link.includes('youtu.be') ||
+    link.includes('music.youtube.com')
+  ) return 'youtube';
+
+  if (link.includes('deezer.com')) return 'deezer';
+
+  if (link.includes('soundcloud.com')) return 'soundcloud';
+
+  return 'unknown';
+}
 
 app.get('/ajouter', (req, res) => {// Render the add/select page: public/ajouter.html (static)
   res.sendFile(path.join(__dirname, 'public', 'ajouter.html'));
@@ -74,8 +89,15 @@ app.get('/add', (req, res) => {// Endpoint to receive shared links (mobile PWA s
   }
 
   const store = ensureCafe(cafe);
-  const item = { id: uuidv4(), link, addedAt: Date.now() };
+  const source = detectSource(link);
+  const item = {
+    id: uuidv4(),
+    link,
+    source,
+    addedAt: Date.now()
+  };
   store.playlist.push(item);
+
 
   // Simple response: if called from share target, a small page is nicer
   if (req.headers['user-agent'] && req.headers['user-agent'].includes('Mozilla')) {
