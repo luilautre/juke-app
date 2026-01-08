@@ -1,111 +1,95 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JukeBox - Player</title>
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
-  #info {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    color: #fff;
-    font-family: system-ui, sans-serif;
-    background: rgba(0,0,0,0.5);
-    padding: 0.5em 1em;
-    border-radius: 5px;
-  }
-  #player {
-    width: 100vw;
-    height: 100vh;
-  }
-</style>
-</head>
-<body>
-<div id="info">JukeBox Café - Player</div>
-<div id="player"></div>
-
-<!-- Script API YouTube -->
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-const params = new URLSearchParams(window.location.search);
-const cafe = params.get('café') || 'default';
+const params = new URLSearchParams(location.search);
+const cafe = params.get('café') || params.get('cafe') || 'default';
 const key = params.get('key');
 
-let player;
+let ytPlayer = null;
+let fallbackTimer = null;
 
-// Chargé automatiquement par l'API YouTube
+function clearFallback() {
+  if (fallbackTimer) {
+    clearTimeout(fallbackTimer);
+    fallbackTimer = null;
+  }
+}
+
+function popAndNext() {
+  fetch(`/pop?cafe=${encodeURIComponent(cafe)}&key=${encodeURIComponent(key)}`, { method: 'POST' })
+    .then(loadNext);
+}
+
+function extractYouTubeId(url) {
+  const m =
+    url.match(/v=([a-zA-Z0-9_-]{11})/) ||
+    url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/) ||
+    url.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+async function loadNext() {
+  clearFallback();
+
+  const res = await fetch(`/peek?cafe=${encodeURIComponent(cafe)}`);
+  const data = await res.json();
+  const item = data.next;
+
+  if (!item) {
+    document.getElementById('player').innerHTML = `<div style="color:white">⏳ En attente…</div>`;
+    return;
+  }
+
+  if (item.source === 'youtube') {
+    playYouTube(item.link);
+  }
+
+  else if (item.source === 'deezer') {
+    playIframe(`https://widget.deezer.com/widget/dark/track/${item.link}`, 180000);
+  }
+
+  else if (item.source === 'soundcloud') {
+    playIframe(
+      `https://w.soundcloud.com/player/?url=${encodeURIComponent(item.link)}&auto_play=true`,
+      180000
+    );
+  }
+
+  else {
+    popAndNext();
+  }
+}
+
+/* ==== YOUTUBE ==== */
 function onYouTubeIframeAPIReady() {
-  player = new YT.Player('player', {
+  ytPlayer = new YT.Player('player', {
     width: '100%',
     height: '100%',
     playerVars: { autoplay: 1, controls: 1 },
     events: {
       onReady: loadNext,
-      onStateChange: onPlayerStateChange
+      onStateChange(e) {
+        if (e.data === YT.PlayerState.ENDED) popAndNext();
+      }
     }
   });
 }
 
-// Quand la vidéo se termine
-async function onPlayerStateChange(event) {
-  if (event.data === YT.PlayerState.ENDED) {
-    // On supprime le morceau joué
-    await fetch(`/pop?caf%C3%A9=${encodeURIComponent(cafe)}&key=${encodeURIComponent(key)}`, { method: 'POST' });
-    // Puis on charge le suivant
-    loadNext();
-  }
+function playYouTube(link) {
+  const id = extractYouTubeId(link);
+  if (!id) return popAndNext();
+  ytPlayer.loadVideoById(id);
 }
 
-// Charge la prochaine vidéo
-async function loadNext() {
-  const peek = await fetch(`/peek?caf%C3%A9=${encodeURIComponent(cafe)}`);
-  const data = await peek.json();
-
-  let videoId = 'dQw4w9WgXcQ'; // par défaut (attente)
-  if (data.next && data.next.link) {
-    const match = data.next.link.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-    if (match) videoId = match[1];
-  }
-
-  player.loadVideoById(videoId);
+/* ==== IFRAME SOURCES ==== */
+function playIframe(src, timeout = 180000) {
+  document.getElementById('player').innerHTML = `
+    <iframe
+      src="${src}"
+      style="width:100%;height:100%;border:0"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
+  `;
+  fallbackTimer = setTimeout(popAndNext, timeout);
 }
 </script>
-<script>
-// Récupère le café depuis l'URL (ex: ?cafe=mon-cafe)
-const urlParams = new URLSearchParams(window.location.search);
-const cafe = urlParams.get('cafe') || 'default';
-
-const qrCacheKey = `qr-${cafe}`;
-const qrCanvas = document.getElementById('qrCanvas');
-
-if (qrCanvas) { // si le canvas existe sur la page
-  let cached = localStorage.getItem(qrCacheKey);
-
-  if (cached) {
-    const img = new Image();
-    img.src = cached;
-    img.onload = () => {
-      const ctx = qrCanvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, qrCanvas.width, qrCanvas.height);
-    };
-  } else {
-    // Génération simple du QR code (fonction qrSimple déjà existante)
-    qrSimple(`${location.origin}/ajouter.html?cafe=${encodeURIComponent(cafe)}`, 256, qrCanvas);
-    localStorage.setItem(qrCacheKey, qrCanvas.toDataURL());
-  }
-}
-</script>
-</body>
-</html>
