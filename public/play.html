@@ -1,3 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JukeBox - Player</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  #info {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #fff;
+    font-family: system-ui, sans-serif;
+    background: rgba(0,0,0,0.5);
+    padding: 0.5em 1em;
+    border-radius: 5px;
+  }
+  #player {
+    width: 100vw;
+    height: 100vh;
+  }
+</style>
+</head>
+<body>
+<div id="info">JukeBox Café - Player</div>
+<div id="player"></div>
+
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 const params = new URLSearchParams(location.search);
@@ -93,3 +131,5 @@ function playIframe(src, timeout = 180000) {
   fallbackTimer = setTimeout(popAndNext, timeout);
 }
 </script>
+</body>
+</html>
