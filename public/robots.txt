@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 User-agent: *
 Disallow: /ajouter.html
+Sitemap: https://juke-app.vercel.app/sitemap.xml
