@@ -38,11 +38,12 @@
 </head>
 <body>
   <h1>🎵 JukeBox Café</h1>
-  <p>Recherche ta musique sur YouTube Music :</p>
+  <p>Recherche ta musique sur ces différetes plateformes :</p>
 
   <input id="search" type="text" placeholder="ex : Daft Punk – Get Lucky">
   <br>
   <button onclick="searchYTMusic()">🔍 Rechercher sur YouTube Music</button>
+  <button onclick="searchDeezer()">Ou sur Deezer</button>
   <br><br>
   <input id="link" type="url" placeholder="Colle le lien ici">
   <br>
@@ -54,6 +55,13 @@ const params = new URLSearchParams(window.location.search);
 const cafe = params.get('café') || 'default';
 const msg = document.getElementById('msg');
 
+//https://www.deezer.com/search/
+function searchDeezer() {
+  const query = encodeURIComponent(document.getElementById('search').value.trim());
+  if (!query) { window.open(`https://www.deezer.com/fr/channels/explore/`, '_blank', 'width=1000,height=700'); return; }
+  // Ouvre la recherche dans une nouvelle fenêtre
+  window.open(`https://www.deezer.com/search/${query}`, '_blank', 'width=1000,height=700');
+}
 function searchYTMusic() {
   const query = encodeURIComponent(document.getElementById('search').value.trim());
   if (!query) { window.open(`https://music.youtube.com/`, '_blank', 'width=1000,height=700'); return; }
