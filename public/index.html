@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="fr"><head>
+<html lang="fr">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Juke‑App</title>
+
+  <title>Juke-App – Transformez vos tables en jukebox moderne</title>
+  <meta name="description" content="Juke-App permet à vos clients de choisir la musique via un QR code, directement depuis leur smartphone. Simple, rapide et sans installation.">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --bg: #0d0f14;
@@ -69,6 +74,11 @@
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 30px;
     }
+    .features h2 {
+      grid-column: 1 / -1;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
     .card {
       background: var(--card);
       border-radius: 16px;
@@ -83,24 +93,31 @@
       color: var(--muted);
       font-size: 0.95rem;
     }
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+    }
   </style>
 </head>
+
 <body>
   <header>
-    <div class="logo">Juke‑App</div>
+    <div class="logo">Juke-App</div>
     <a href="/register.html" class="cta-header">Connexion</a>
   </header>
 
   <section class="hero">
     <h1>Transformez vos tables en un jukebox moderne</h1>
     <p>Vos clients scannent un simple QR code et choisissent la musique directement depuis leur smartphone. Simple, instantané et sans installation.</p>
-    <a href="/register.html" class="cta">Créer mon juke‑box</a>
+    <a href="/register.html" class="cta">Créer mon juke-box</a>
   </section>
 
   <section class="features">
+    <h2>Fonctionnalités</h2>
+
     <div class="card">
       <h3>Installation rapide</h3>
-      <p>Générez un QR code en un clic. Placez‑le sur vos tables et c’est terminé.</p>
+      <p>Générez un QR code en un clic. Placez-le sur vos tables et c’est terminé.</p>
     </div>
     <div class="card">
       <h3>Contrôle total</h3>
@@ -115,11 +132,9 @@
       <p>Vos clients participent à l’ambiance de votre lieu, et ils adorent.</p>
     </div>
   </section>
-<span style="
-    text-align: center;
-"><footer>
-        <p>© 2025 Juke-App par <a href="https://luilautre.onrender.com/?utm-source=juke-app" style="color:white">luilautre</a> (alias Achille Boulanger)</p>
-    </footer></span>
 
-
-</body></html>
+  <footer>
+    <p>© 2025 Juke-App par <a href="https://luilautre.onrender.com/?utm-source=juke-app" style="color:white">luilautre</a> (alias Achille Boulanger)</p>
+  </footer>
+</body>
+</html>
