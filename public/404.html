@@ -4,6 +4,108 @@
   <meta charset="UTF-8">
   <title>Page introuvable – Juke-App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --card: #151820;
+      --accent: #3b5bdb; /*--accent: #5c7cfa;*/
+      --text: #f2f4f8;
+      --muted: #8b93a3;
+    }
+    body {
+      margin: 0;
+      font-family: Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+    .cta-header {
+      padding: 10px 18px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .hero {
+      padding: 120px 40px;
+      max-width: 900px;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+    .cta {
+      padding: 16px 30px;
+      background: var(--accent);
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .acces {
+      position: fixed;
+      right:  5px;
+      bottom: 5px;
+    }
+    .acces svg {
+      width: 18px;
+      height: 18px;
+      margin-left: 6px;
+      vertical-align: middle;
+      align-items: center;
+      gap: 6px;
+      display: inline-flex;
+    }
+
+    .features {
+      margin-top: 120px;
+      padding: 0 40px 80px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 30px;
+    }
+    .features h2 {
+      grid-column: 1 / -1;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 1.3rem;
+    }
+    .card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+    }
+  </style>
 </head>
 <body>
   <main class="notfound">
