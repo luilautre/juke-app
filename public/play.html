@@ -59,10 +59,16 @@ function popAndNext() {
 }
 
 function extractYouTubeId(url) {
-  const m =
-    url.match(/v=([a-zA-Z0-9_-]{11})/) ||
-    url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/) ||
-    url.match(/\/shorts\/([a-zA-Z0-9_-]{11})/);
+  try {
+    const u = new URL(url);
+    return u.searchParams.get('v');
+  } catch {
+    return null;
+  }
+}
+
+function extractDeezerId(url) {
+  const m = url.match(/\/track\/(\d+)/);
   return m ? m[1] : null;
 }
 
@@ -83,7 +89,9 @@ async function loadNext() {
   }
 
   else if (item.source === 'deezer') {
-    playIframe(`https://widget.deezer.com/widget/dark/track/${item.link}`, 180000);
+    const id = extractDeezerId(item.link);
+    if (!id) return popAndNext();
+    playIframe(`https://widget.deezer.com/widget/dark/track/${id}`, 180000);
   }
 
   else if (item.source === 'soundcloud') {
