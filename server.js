@@ -143,4 +143,8 @@ app.get('/peek', (req, res) => {// API to peek first item
   res.json({ cafe, next: store.playlist[0] || null });
 });
 
+app.use((req, res) => {
+  res.status(404).sendFile(process.cwd() + "/public/404.html");
+});
+
 app.listen(port, () => console.log(`JukeBox server running on http://localhost:${port}`));
