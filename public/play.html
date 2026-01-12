@@ -3,152 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex">
 <title>JukeBox – Player</title>
-
 <style>
 :root{
-  --bg:#000;
-  --panel:#111;
-  --border:#333;
-  --text:#fff;
-  --muted:#888;
-  --green:#2ecc71;
-  --red:#e74c3c;
+  --bg:#000; --panel:#111; --border:#333; --text:#fff; --muted:#888; --green:#2ecc71; --red:#e74c3c;
 }
-
-*{box-sizing:border-box}
-
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  background:var(--bg);
-  color:var(--text);
-  font-family:system-ui,sans-serif;
-}
-
-/* ===== LAYOUT ===== */
-#app{
-  display:flex;
-  width:100%;
-  height:100%;
-}
-
-/* ===== PLAYLIST ===== */
-#playlist{
-  width:80px;
-  background:var(--panel);
-  border-right:1px solid var(--border);
-  transition:width .35s ease;
-  overflow:hidden;
-}
-
-#playlist.open{
-  width:320px;
-}
-
-.playlist-header{
-  padding:15px;
-  font-weight:600;
-  border-bottom:1px solid var(--border);
-}
-
-.track{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:12px 15px;
-  cursor:pointer;
-  transition:background .2s;
-}
-
-.track:hover{
-  background:#1a1a1a;
-}
-
-.track img{
-  width:42px;
-  height:42px;
-  object-fit:cover;
-  background:#222;
-}
-
-.track .title{
-  flex:1;
-  font-size:.9em;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-.track .trash{
-  color:var(--red);
-  font-size:18px;
-}
-
-/* bouton + */
-#add{
-  padding:15px;
-  font-size:28px;
-  color:var(--green);
-  cursor:pointer;
-}
-
-/* ===== VIEWER ===== */
-#viewer{
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:30px;
-}
-
-#frame{
-  width:100%;
-  height:100%;
-  max-width:1100px;
-  max-height:620px;
-  border:2px solid var(--border);
-  border-radius:12px;
-  overflow:hidden;
-  background:#000;
-  transition:all .3s ease;
-}
-
-/* bouton menu tactile */
-#menuBtn{
-  position:absolute;
-  top:15px;
-  left:15px;
-  background:#111;
-  border:1px solid var(--border);
-  color:white;
-  padding:8px 12px;
-  border-radius:8px;
-  display:none;
-}
-
-@media (hover:none){
-  #menuBtn{display:block}
-}
+*{box-sizing:border-box;}
+html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;}
+#app{display:flex;width:100%;height:100%;}
+#playlist{width:80px;background:var(--panel);border-right:1px solid var(--border);transition:width .35s ease;overflow:hidden;}
+#playlist.open{width:320px;}
+.playlist-header{padding:15px;font-weight:600;border-bottom:1px solid var(--border);}
+.track{display:flex;align-items:center;gap:10px;padding:10px 15px;cursor:pointer;transition:background .2s;}
+.track:hover{background:#1a1a1a;}
+.track img{width:42px;height:42px;object-fit:cover;background:#222;}
+.track .title{flex:1;font-size:.9em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.track .trash{color:var(--red);font-size:18px;cursor:pointer;}
+#add{padding:15px;font-size:28px;color:var(--green);cursor:pointer;}
+#viewer{flex:1;display:flex;justify-content:center;align-items:center;padding:30px;}
+#frame{width:100%;height:100%;max-width:1100px;max-height:620px;border:2px solid var(--border);border-radius:12px;overflow:hidden;background:#000;transition:all .3s ease;}
+#menuBtn{position:absolute;top:15px;left:15px;background:#111;border:1px solid var(--border);color:white;padding:8px 12px;border-radius:8px;display:none;}
+@media(hover:none){#menuBtn{display:block}}
 </style>
 </head>
-
 <body>
+
 <button id="menuBtn">☰</button>
 
 <div id="app">
   <aside id="playlist">
     <div class="playlist-header">Playlist</div>
-
-    <!-- EXEMPLE visuel -->
-    <div class="track">
-      <img>
-      <div class="title">Musique suivante</div>
-      <div class="trash">🗑️</div>
-    </div>
-
+    <div id="tracks"></div>
     <div id="add">+</div>
   </aside>
 
@@ -159,75 +44,99 @@ html,body{
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-/* ===== UI ===== */
-const playlist = document.getElementById('playlist');
+const playlistEl = document.getElementById('playlist');
+const tracksEl = document.getElementById('tracks');
 const menuBtn = document.getElementById('menuBtn');
+const frame = document.getElementById('frame');
 
-playlist.addEventListener('mouseenter',()=>playlist.classList.add('open'));
-playlist.addEventListener('mouseleave',()=>playlist.classList.remove('open'));
-menuBtn.onclick=()=>playlist.classList.toggle('open');
+playlistEl.addEventListener('mouseenter',()=>playlistEl.classList.add('open'));
+playlistEl.addEventListener('mouseleave',()=>playlistEl.classList.remove('open'));
+menuBtn.onclick=()=>playlistEl.classList.toggle('open');
 
-/* ===== PARAMS ===== */
 const params=new URLSearchParams(location.search);
 const cafe=params.get('café')||params.get('cafe')||'default';
 const key=params.get('key');
 
 let ytPlayer=null;
 let fallback=null;
+let currentTrackId=null;
 
-function clearFallback(){
-  if(fallback){clearTimeout(fallback);fallback=null;}
-}
+function clearFallback(){if(fallback){clearTimeout(fallback);fallback=null;}}
 
 function popAndNext(){
   fetch(`/pop?cafe=${encodeURIComponent(cafe)}&key=${encodeURIComponent(key)}`,{method:'POST'})
-    .then(loadNext);
+    .then(loadPlaylist);
 }
 
-/* ===== EXTRACT ===== */
-function ytId(url){
-  try{ return new URL(url).searchParams.get('v'); }
-  catch{return null}
-}
-function dzId(url){
-  const m=url.match(/track\/(\d+)/);
-  return m?m[1]:null;
-}
+function ytId(url){try{return new URL(url).searchParams.get('v');}catch{return null;}}
+function dzId(url){const m=url.match(/track\/(\d+)/);return m?m[1]:null;}
 
-/* ===== LOAD ===== */
-async function loadNext(){
+async function loadPlaylist(){
   clearFallback();
-  const r=await fetch(`/peek?cafe=${encodeURIComponent(cafe)}`);
-  const d=await r.json();
-  const item=d.next;
+  const res = await fetch(`/playlist?cafe=${encodeURIComponent(cafe)}`);
+  const data = await res.json();
+  const list = data.playlist||[];
 
-  if(!item){
-    frame.innerHTML='<div style="color:#888;padding:20px">En attente…</div>';
-    return;
+  // Clear
+  tracksEl.innerHTML = '';
+
+  list.forEach(item=>{
+    const div = document.createElement('div');
+    div.className='track';
+    div.dataset.id=item.id;
+
+    // Placeholder image si pas dispo
+    let imgSrc = 'https://via.placeholder.com/42?text=?';
+    if(item.source==='youtube'){ imgSrc=`https://img.youtube.com/vi/${ytId(item.link)}/mqdefault.jpg`; }
+    else if(item.source==='deezer'){ const id=dzId(item.link); if(id) imgSrc=`https://e-cdns-images.dzcdn.net/images/cover/${id}/56x56-000000-80-0-0.jpg`; }
+    const img = document.createElement('img');
+    img.src=imgSrc;
+
+    const title = document.createElement('div');
+    title.className='title';
+    title.textContent=item.title||`Musique ${item.id.slice(0,4)}`;
+
+    const trash = document.createElement('div');
+    trash.className='trash';
+    trash.textContent='🗑️';
+    trash.onclick=e=>{
+      e.stopPropagation();
+      fetch(`/pop?cafe=${encodeURIComponent(cafe)}&key=${encodeURIComponent(key)}`,{method:'POST'}).then(loadPlaylist);
+    };
+
+    div.append(img,title,trash);
+    div.onclick=()=>playTrack(item);
+    tracksEl.appendChild(div);
+  });
+
+  // Jouer le premier morceau si aucun en cours
+  if(list.length && (!currentTrackId || !list.find(t=>t.id===currentTrackId))){
+    playTrack(list[0]);
   }
+}
 
-  if(item.source==='youtube') playYT(item.link);
+function playTrack(item){
+  clearFallback();
+  currentTrackId = item.id;
+  if(item.source==='youtube'){ playYT(item.link); }
   else if(item.source==='deezer'){
-    const id=dzId(item.link);
-    if(!id)return popAndNext();
+    const id=dzId(item.link); if(!id) return popAndNext();
     playIframe(`https://widget.deezer.com/widget/dark/track/${id}`,180000);
   }
   else if(item.source==='soundcloud'){
-    playIframe(
-      `https://w.soundcloud.com/player/?url=${encodeURIComponent(item.link)}&auto_play=true`,
-      180000
-    );
-  }else popAndNext();
+    playIframe(`https://w.soundcloud.com/player/?url=${encodeURIComponent(item.link)}&auto_play=true`,180000);
+  }
+  else popAndNext();
 }
 
-/* ===== YOUTUBE ===== */
+/* ==== YOUTUBE ==== */
 function onYouTubeIframeAPIReady(){
   ytPlayer=new YT.Player('frame',{
     width:'100%',
     height:'100%',
     playerVars:{autoplay:1,controls:1},
     events:{
-      onReady:loadNext,
+      onReady:loadPlaylist,
       onStateChange:e=>{
         if(e.data===YT.PlayerState.ENDED) popAndNext();
       }
@@ -235,22 +144,10 @@ function onYouTubeIframeAPIReady(){
   });
 }
 
-function playYT(link){
-  const id=ytId(link);
-  if(!id)return popAndNext();
-  ytPlayer.loadVideoById(id);
-}
-
-/* ===== IFRAME ===== */
+/* ==== IFRAME ==== */
 function playIframe(src,timeout){
-  frame.innerHTML=`
-    <iframe
-      src="${src}"
-      style="width:100%;height:100%;border:0"
-      allow="autoplay; encrypted-media"
-      allowfullscreen>
-    </iframe>`;
-  fallback=setTimeout(popAndNext,timeout);
+  frame.innerHTML=`<iframe src="${src}" style="width:100%;height:100%;border:0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  fallback = setTimeout(popAndNext,timeout);
 }
 </script>
 </body>
