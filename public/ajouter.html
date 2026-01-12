@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<link link rel="icon" type="image/png" href="/images/logo.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex">
 <title>JukeBox Café</title>
 <style>
   body {
@@ -35,56 +33,73 @@
   }
   button:hover { background: #ff7f00; }
   #msg { font-size: 0.9em; color: #555; margin-top: 0.5em; }
+
+  /* Styles pour player=true */
+  body.player { background: #000; color: #fff; padding:0; text-align:center; }
+  body.player input, body.player button { font-size:1em; width:auto; margin:5px; padding:0.5em; border-radius:6px; }
+  body.player input { max-width:80%; }
 </style>
 </head>
 <body>
-  <h1>🎵 JukeBox Café</h1>
-  <p>Recherche ta musique sur ces différetes plateformes :</p>
+<h1 id="title">🎵 JukeBox Café</h1>
 
-  <input id="search" type="text" placeholder="ex : Daft Punk – Get Lucky">
-  <br>
-  <button onclick="searchYTMusic()">🔍 Rechercher sur YouTube Music</button>
-  <button onclick="searchDeezer()">Ou sur Deezer</button>
-  <br><br>
-  <input id="link" type="url" placeholder="Colle le lien ici">
-  <br>
-  <button onclick="addMusic()">🎶 Ajouter au jukebox</button>
+<div id="normalUI">
+  <p>Recherche ta musique sur ces plateformes :</p>
+  <input id="search" type="text" placeholder="ex : Daft Punk – Get Lucky"><br>
+  <button onclick="searchYTMusic()">🔍 YouTube Music</button>
+  <button onclick="searchDeezer()">🔍 Deezer</button>
+  <button onclick="searchSC()">🔍 SoundCloud</button><br><br>
+  <input id="link" type="url" placeholder="Colle le lien ici"><br>
+  <button onclick="addMusic()">🎶 Ajouter</button>
   <p id="msg"></p>
+</div>
 
 <script>
 const params = new URLSearchParams(window.location.search);
-const cafe = params.get('café') || 'default';
+const cafe = params.get('café')||params.get('cafe')||'default';
+const playerMode = params.get('player')==='true';
 const msg = document.getElementById('msg');
+const normalUI = document.getElementById('normalUI');
 
-//https://www.deezer.com/search/
+// Si player=true : simplifier l'affichage
+if(playerMode){
+  document.body.classList.add('player');
+  normalUI.querySelector('p').textContent = 'Ajouter une musique :';
+  document.getElementById('title').style.fontSize = '1.5em';
+}
+
+// Fonctions de recherche
 function searchDeezer() {
-  const query = encodeURIComponent(document.getElementById('search').value.trim());
-  if (!query) { window.open(`https://www.deezer.com/fr/channels/explore/`, '_blank', 'width=1000,height=700'); return; }
-  // Ouvre la recherche dans une nouvelle fenêtre
-  window.open(`https://www.deezer.com/search/${query}`, '_blank', 'width=1000,height=700');
+  const q = encodeURIComponent(document.getElementById('search').value.trim());
+  window.open(q?`https://www.deezer.com/search/${q}`:'https://www.deezer.com/fr/channels/explore','_blank','width=1000,height=700');
 }
 function searchYTMusic() {
-  const query = encodeURIComponent(document.getElementById('search').value.trim());
-  if (!query) { window.open(`https://music.youtube.com/`, '_blank', 'width=1000,height=700'); return; }
-  // Ouvre la recherche dans une nouvelle fenêtre
-  window.open(`https://music.youtube.com/search?q=${query}`, '_blank', 'width=1000,height=700');
+  const q = encodeURIComponent(document.getElementById('search').value.trim());
+  window.open(q?`https://music.youtube.com/search?q=${q}`:'https://music.youtube.com/','_blank','width=1000,height=700');
+}
+function searchSC() {
+  const q = encodeURIComponent(document.getElementById('search').value.trim());
+  window.open(q?`https://soundcloud.com/search?q=${q}`:'https://soundcloud.com/explore','_blank','width=1000,height=700');
 }
 
-async function addMusic() {
+// Ajout musique
+async function addMusic(){
   const link = document.getElementById('link').value.trim();
-  if (!link.startsWith('http')) { msg.textContent = '⚠️ Entre un lien YouTube valide.'; return; }
+  if(!link.startsWith('http')){ msg.textContent='⚠️ Entre un lien valide.'; return; }
 
-  try {
+  try{
     const res = await fetch(`/add?café=${encodeURIComponent(cafe)}&link=${encodeURIComponent(link)}`);
-    if (res.ok) {
-      msg.textContent = '✅ Ta musique a été ajoutée au jukebox !';
-      document.getElementById('link').value = '';
-      document.getElementById('search').value = '';
-    } else {
-      msg.textContent = '❌ Erreur lors de l’ajout.';
+    if(res.ok){
+      msg.textContent='✅ Musique ajoutée !';
+      document.getElementById('link').value='';
+      document.getElementById('search').value='';
+      // Si player=true : fermer la fenêtre
+      if(playerMode) setTimeout(()=>window.close(),800);
+    }else{
+      msg.textContent='❌ Erreur.';
     }
-  } catch (e) {
-    msg.textContent = '⚠️ Erreur réseau.';
+  }catch(e){
+    msg.textContent='⚠️ Erreur réseau.';
   }
 }
 </script>
