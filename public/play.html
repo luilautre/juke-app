@@ -10,6 +10,13 @@
 }
 *{box-sizing:border-box;}
 html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;}
+#fullscreenBtn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background:#111; color:white; border:1px solid var(--border);
+  padding:8px 12px; border-radius:8px; z-index:10; cursor:pointer;
+}
 #app{display:flex;width:100%;height:100%;}
 #playlist{width:80px;background:var(--panel);border-right:1px solid var(--border);transition:width .35s ease;overflow:hidden;}
 #playlist.open{width:320px;}
@@ -46,6 +53,7 @@ html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text)
   <main id="viewer">
     <div id="frame"></div>
   </main>
+  <button id="fullscreenBtn">⛶</button>
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
@@ -54,6 +62,20 @@ const playlistEl = document.getElementById('playlist');
 const tracksEl = document.getElementById('tracks');
 const menuBtn = document.getElementById('menuBtn');
 const frame = document.getElementById('frame');
+
+const fsBtn = document.getElementById('fullscreenBtn');
+fsBtn.onclick = () => {
+  const elem = document.documentElement;
+  if (!document.fullscreenElement) {
+    if (elem.requestFullscreen) elem.requestFullscreen();
+    else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+    else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    else if (document.msExitFullscreen) document.msExitFullscreen();
+  }
+};
 
 playlistEl.addEventListener('mouseenter',()=>playlistEl.classList.add('open'));
 playlistEl.addEventListener('mouseleave',()=>playlistEl.classList.remove('open'));
