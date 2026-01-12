@@ -63,6 +63,15 @@ const tracksEl = document.getElementById('tracks');
 const menuBtn = document.getElementById('menuBtn');
 const frame = document.getElementById('frame');
 
+const addBtn = document.getElementById('add');
+addBtn.onclick = () => {
+  window.open(
+    'https://juke-app.vercel.app/ajouter.html?player=true',
+    'addTrack',
+    'width=500,height=600,top=100,left=100,resizable=yes,scrollbars=yes'
+  );
+};
+
 const fsBtn = document.getElementById('fullscreenBtn');
 fsBtn.onclick = () => {
   const elem = document.documentElement;
