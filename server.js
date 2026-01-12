@@ -97,6 +97,20 @@ app.get('/peek', (req, res) => {
   res.json({ cafe, next: store.playlist[0] || null });
 });
 
+// POST /del?id=TRACK_ID&cafe=CAFE_NAME
+app.post('/del', (req, res) => {
+  const cafe = req.query.café || req.query.cafe || 'default';
+  const id = req.query.id;
+  if (!id) return res.status(400).json({ error: 'No id provided' });
+
+  const store = ensureCafe(cafe);
+  const index = store.playlist.findIndex(t => t.id === id);
+  if (index === -1) return res.status(404).json({ error: 'Track not found' });
+
+  const [removed] = store.playlist.splice(index, 1);
+  res.json({ ok: true, removed });
+});
+
 // 404
 app.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'public', '404.html')));
 
