@@ -1,144 +1,256 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<link link rel="icon" type="image/png" href="/images/logo.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>JukeBox - Player</title>
+<title>JukeBox – Player</title>
+
 <style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
-  #info {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    color: #fff;
-    font-family: system-ui, sans-serif;
-    background: rgba(0,0,0,0.5);
-    padding: 0.5em 1em;
-    border-radius: 5px;
-  }
-  #player {
-    width: 100vw;
-    height: 100vh;
-  }
+:root{
+  --bg:#000;
+  --panel:#111;
+  --border:#333;
+  --text:#fff;
+  --muted:#888;
+  --green:#2ecc71;
+  --red:#e74c3c;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,sans-serif;
+}
+
+/* ===== LAYOUT ===== */
+#app{
+  display:flex;
+  width:100%;
+  height:100%;
+}
+
+/* ===== PLAYLIST ===== */
+#playlist{
+  width:80px;
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  transition:width .35s ease;
+  overflow:hidden;
+}
+
+#playlist.open{
+  width:320px;
+}
+
+.playlist-header{
+  padding:15px;
+  font-weight:600;
+  border-bottom:1px solid var(--border);
+}
+
+.track{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 15px;
+  cursor:pointer;
+  transition:background .2s;
+}
+
+.track:hover{
+  background:#1a1a1a;
+}
+
+.track img{
+  width:42px;
+  height:42px;
+  object-fit:cover;
+  background:#222;
+}
+
+.track .title{
+  flex:1;
+  font-size:.9em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.track .trash{
+  color:var(--red);
+  font-size:18px;
+}
+
+/* bouton + */
+#add{
+  padding:15px;
+  font-size:28px;
+  color:var(--green);
+  cursor:pointer;
+}
+
+/* ===== VIEWER ===== */
+#viewer{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:30px;
+}
+
+#frame{
+  width:100%;
+  height:100%;
+  max-width:1100px;
+  max-height:620px;
+  border:2px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  background:#000;
+  transition:all .3s ease;
+}
+
+/* bouton menu tactile */
+#menuBtn{
+  position:absolute;
+  top:15px;
+  left:15px;
+  background:#111;
+  border:1px solid var(--border);
+  color:white;
+  padding:8px 12px;
+  border-radius:8px;
+  display:none;
+}
+
+@media (hover:none){
+  #menuBtn{display:block}
+}
 </style>
 </head>
+
 <body>
-<div id="info">JukeBox Café - Player</div>
-<div id="player"></div>
+<button id="menuBtn">☰</button>
+
+<div id="app">
+  <aside id="playlist">
+    <div class="playlist-header">Playlist</div>
+
+    <!-- EXEMPLE visuel -->
+    <div class="track">
+      <img>
+      <div class="title">Musique suivante</div>
+      <div class="trash">🗑️</div>
+    </div>
+
+    <div id="add">+</div>
+  </aside>
+
+  <main id="viewer">
+    <div id="frame"></div>
+  </main>
+</div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-const params = new URLSearchParams(location.search);
-const cafe = params.get('café') || params.get('cafe') || 'default';
-const key = params.get('key');
+/* ===== UI ===== */
+const playlist = document.getElementById('playlist');
+const menuBtn = document.getElementById('menuBtn');
 
-let ytPlayer = null;
-let fallbackTimer = null;
+playlist.addEventListener('mouseenter',()=>playlist.classList.add('open'));
+playlist.addEventListener('mouseleave',()=>playlist.classList.remove('open'));
+menuBtn.onclick=()=>playlist.classList.toggle('open');
 
-function clearFallback() {
-  if (fallbackTimer) {
-    clearTimeout(fallbackTimer);
-    fallbackTimer = null;
-  }
+/* ===== PARAMS ===== */
+const params=new URLSearchParams(location.search);
+const cafe=params.get('café')||params.get('cafe')||'default';
+const key=params.get('key');
+
+let ytPlayer=null;
+let fallback=null;
+
+function clearFallback(){
+  if(fallback){clearTimeout(fallback);fallback=null;}
 }
 
-function popAndNext() {
-  fetch(`/pop?cafe=${encodeURIComponent(cafe)}&key=${encodeURIComponent(key)}`, { method: 'POST' })
+function popAndNext(){
+  fetch(`/pop?cafe=${encodeURIComponent(cafe)}&key=${encodeURIComponent(key)}`,{method:'POST'})
     .then(loadNext);
 }
 
-function extractYouTubeId(url) {
-  try {
-    const u = new URL(url);
-    return u.searchParams.get('v');
-  } catch {
-    return null;
-  }
+/* ===== EXTRACT ===== */
+function ytId(url){
+  try{ return new URL(url).searchParams.get('v'); }
+  catch{return null}
+}
+function dzId(url){
+  const m=url.match(/track\/(\d+)/);
+  return m?m[1]:null;
 }
 
-function extractDeezerId(url) {
-  const m = url.match(/\/track\/(\d+)/);
-  return m ? m[1] : null;
-}
-
-async function loadNext() {
+/* ===== LOAD ===== */
+async function loadNext(){
   clearFallback();
+  const r=await fetch(`/peek?cafe=${encodeURIComponent(cafe)}`);
+  const d=await r.json();
+  const item=d.next;
 
-  const res = await fetch(`/peek?cafe=${encodeURIComponent(cafe)}`);
-  const data = await res.json();
-  const item = data.next;
-
-  if (!item) {
-    document.getElementById('player').innerHTML = `<div style="color:white">⏳ En attente…</div>`;
+  if(!item){
+    frame.innerHTML='<div style="color:#888;padding:20px">En attente…</div>';
     return;
   }
 
-  if (item.source === 'youtube') {
-    playYouTube(item.link);
+  if(item.source==='youtube') playYT(item.link);
+  else if(item.source==='deezer'){
+    const id=dzId(item.link);
+    if(!id)return popAndNext();
+    playIframe(`https://widget.deezer.com/widget/dark/track/${id}`,180000);
   }
-
-  else if (item.source === 'deezer') {
-    const id = extractDeezerId(item.link);
-    if (!id) return popAndNext();
-    playIframe(`https://widget.deezer.com/widget/dark/track/${id}`, 180000);
-  }
-
-  else if (item.source === 'soundcloud') {
+  else if(item.source==='soundcloud'){
     playIframe(
       `https://w.soundcloud.com/player/?url=${encodeURIComponent(item.link)}&auto_play=true`,
       180000
     );
-  }
-
-  else {
-    popAndNext();
-  }
+  }else popAndNext();
 }
 
-/* ==== YOUTUBE ==== */
-function onYouTubeIframeAPIReady() {
-  ytPlayer = new YT.Player('player', {
-    width: '100%',
-    height: '100%',
-    playerVars: { autoplay: 1, controls: 1 },
-    events: {
-      onReady: loadNext,
-      onStateChange(e) {
-        if (e.data === YT.PlayerState.ENDED) popAndNext();
+/* ===== YOUTUBE ===== */
+function onYouTubeIframeAPIReady(){
+  ytPlayer=new YT.Player('frame',{
+    width:'100%',
+    height:'100%',
+    playerVars:{autoplay:1,controls:1},
+    events:{
+      onReady:loadNext,
+      onStateChange:e=>{
+        if(e.data===YT.PlayerState.ENDED) popAndNext();
       }
     }
   });
 }
 
-function playYouTube(link) {
-  const id = extractYouTubeId(link);
-  if (!id) return popAndNext();
+function playYT(link){
+  const id=ytId(link);
+  if(!id)return popAndNext();
   ytPlayer.loadVideoById(id);
 }
 
-/* ==== IFRAME SOURCES ==== */
-function playIframe(src, timeout = 180000) {
-  document.getElementById('player').innerHTML = `
+/* ===== IFRAME ===== */
+function playIframe(src,timeout){
+  frame.innerHTML=`
     <iframe
       src="${src}"
       style="width:100%;height:100%;border:0"
       allow="autoplay; encrypted-media"
       allowfullscreen>
-    </iframe>
-  `;
-  fallbackTimer = setTimeout(popAndNext, timeout);
+    </iframe>`;
+  fallback=setTimeout(popAndNext,timeout);
 }
 </script>
 </body>
