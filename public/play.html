@@ -50,10 +50,10 @@ html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text)
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-const playlistEl=document.getElementById('playlist');
-const tracksEl=document.getElementById('tracks');
-const menuBtn=document.getElementById('menuBtn');
-const frame=document.getElementById('frame');
+const playlistEl = document.getElementById('playlist');
+const tracksEl = document.getElementById('tracks');
+const menuBtn = document.getElementById('menuBtn');
+const frame = document.getElementById('frame');
 
 playlistEl.addEventListener('mouseenter',()=>playlistEl.classList.add('open'));
 playlistEl.addEventListener('mouseleave',()=>playlistEl.classList.remove('open'));
@@ -68,8 +68,10 @@ let currentTrackId=null;
 
 function clearFallback(){if(fallback){clearTimeout(fallback);fallback=null;}}
 
-function popAndNext(){
-  fetch(`/pop?cafe=${encodeURIComponent(cafe)}`,{method:'POST'}).then(loadPlaylist);
+// Supprimer et charger la playlist
+function delTrack(id){
+  fetch(`/del?id=${id}&cafe=${encodeURIComponent(cafe)}`,{method:'POST'})
+    .then(loadPlaylist);
 }
 
 function ytId(url){try{return new URL(url).searchParams.get('v');}catch{return null;}}
@@ -77,9 +79,9 @@ function dzId(url){const m=url.match(/track\/(\d+)/);return m?m[1]:null;}
 
 async function loadPlaylist(){
   clearFallback();
-  const res=await fetch(`/playlist?cafe=${encodeURIComponent(cafe)}`);
-  const data=await res.json();
-  const list=data.playlist||[];
+  const res = await fetch(`/playlist?cafe=${encodeURIComponent(cafe)}`);
+  const data = await res.json();
+  const list = data.playlist||[];
 
   tracksEl.innerHTML='';
 
@@ -91,15 +93,14 @@ async function loadPlaylist(){
     let imgSrc='https://via.placeholder.com/42?text=?';
     if(item.source==='youtube'){ imgSrc=`https://img.youtube.com/vi/${ytId(item.link)}/mqdefault.jpg`; }
     else if(item.source==='deezer'){ const id=dzId(item.link); if(id) imgSrc=`https://e-cdns-images.dzcdn.net/images/cover/${id}/56x56-000000-80-0-0.jpg`; }
+
     const img=document.createElement('img'); img.src=imgSrc;
 
-    const title=document.createElement('div'); title.className='title'; title.textContent=item.title||`Musique ${item.id.slice(0,4)}`;
+    const title=document.createElement('div'); title.className='title';
+    title.textContent=item.title||`Musique ${item.id.slice(0,4)}`;
 
     const trash=document.createElement('div'); trash.className='trash'; trash.textContent='🗑️';
-    trash.onclick=e=>{
-      e.stopPropagation();
-      fetch(`/pop?cafe=${encodeURIComponent(cafe)}`,{method:'POST'}).then(loadPlaylist);
-    };
+    trash.onclick=e=>{ e.stopPropagation(); delTrack(item.id); };
 
     div.append(img,title,trash);
     div.onclick=()=>playTrack(item);
@@ -115,9 +116,20 @@ function playTrack(item){
   clearFallback();
   currentTrackId=item.id;
   if(item.source==='youtube'){ playYT(item.link); }
-  else if(item.source==='deezer'){ const id=dzId(item.link); if(!id)return popAndNext(); playIframe(`https://widget.deezer.com/widget/dark/track/${id}`,180000); }
+  else if(item.source==='deezer'){ const id=dzId(item.link); if(!id) return nextTrack(); playIframe(`https://widget.deezer.com/widget/dark/track/${id}`,180000); }
   else if(item.source==='soundcloud'){ playIframe(`https://w.soundcloud.com/player/?url=${encodeURIComponent(item.link)}&auto_play=true`,180000); }
-  else popAndNext();
+  else nextTrack();
+}
+
+// Jouer la musique suivante
+function nextTrack(){
+  fetch(`/playlist?cafe=${encodeURIComponent(cafe)}`)
+    .then(r=>r.json())
+    .then(d=>{
+      const list=d.playlist||[];
+      if(list.length){ playTrack(list[0]); }
+      else{ frame.innerHTML=`<div style="color:white">⏳ En attente…</div>`; currentTrackId=null; }
+    });
 }
 
 /* ==== YOUTUBE ==== */
@@ -127,22 +139,23 @@ function onYouTubeIframeAPIReady(){
     playerVars:{autoplay:1,controls:1},
     events:{
       onReady:loadPlaylist,
-      onStateChange:e=>{if(e.data===YT.PlayerState.ENDED) popAndNext();}
+      onStateChange:e=>{ if(e.data===YT.PlayerState.ENDED) nextTrack(); }
     }
   });
 }
 
 function playYT(link){
-  const id=ytId(link);
-  if(!id) return popAndNext();
+  const id=ytId(link); if(!id) return nextTrack();
   ytPlayer.loadVideoById(id);
 }
 
 /* ==== IFRAME ==== */
 function playIframe(src,timeout){
   frame.innerHTML=`<iframe src="${src}" style="width:100%;height:100%;border:0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-  fallback=setTimeout(popAndNext,timeout);
+  fallback=setTimeout(nextTrack,timeout);
 }
+
+loadPlaylist();
 </script>
 </body>
 </html>
