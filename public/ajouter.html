@@ -41,14 +41,14 @@
 </style>
 </head>
 <body>
-<h1 id="title">🎵 JukeBox Café</h1>
+<h1 id="title">🎵 <a id="home" href="./" style="color: #d66b00;">Juke-app</a></h1>
 
 <div id="normalUI">
   <p>Recherche ta musique sur ces plateformes :</p>
-  <input id="search" type="text" placeholder="ex : Daft Punk – Get Lucky"><br>
-  <button onclick="searchYTMusic()">🔍 YouTube Music</button>
-  <button onclick="searchDeezer()">🔍 Deezer</button>
-  <button onclick="searchSC()">🔍 SoundCloud</button><br><br>
+  <input id="search" type="text" placeholder="Rechercher 🔍"><br>
+  <button onclick="searchYTMusic()">YouTube Music</button>
+  <button onclick="searchDeezer()">Deezer</button>
+  <button onclick="searchSC()">SoundCloud</button><br><br>
   <input id="link" type="url" placeholder="Colle le lien ici"><br>
   <button onclick="addMusic()">🎶 Ajouter</button>
   <p id="msg"></p>
@@ -64,6 +64,8 @@ const normalUI = document.getElementById('normalUI');
 // Si player=true : simplifier l'affichage
 if(playerMode){
   document.body.classList.add('player');
+  const aHome = document.getElementById('home')
+  aHome.href="#"
   normalUI.querySelector('p').textContent = 'Ajouter une musique :';
   document.getElementById('title').style.fontSize = '1.5em';
 }
@@ -99,7 +101,7 @@ async function addMusic(){
       msg.textContent='❌ Erreur.';
     }
   }catch(e){
-    msg.textContent='⚠️ Erreur réseau.';
+    msg.textContent='⚠️ Erreur réseau. (veuillez signaler cette erreur au)';
   }
 }
 </script>
