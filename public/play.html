@@ -64,17 +64,21 @@ const menuBtn = document.getElementById('menuBtn');
 const frame = document.getElementById('frame');
 
 window.addEventListener("message", (event) => {
+  if (event.origin !== "https://juke-app.vercel.app") return;
   if (event.data?.type === "TRACK_ADDED") {
-    console.log("Musique ajoutée :", event.data);
-
-    // exemple d'action
-    // refreshPlaylist();
-    // afficher un toast
+    loadPlaylist();
   }
 });
 
 const addBtn = document.getElementById('add');
+let addWindow = null;
+
 addBtn.onclick = () => {
+  if (addWindow && !addWindow.closed) {
+    addWindow.focus();
+    return;
+  }
+  
   addWindow=window.open(
     'https://juke-app.vercel.app/ajouter.html?player=true',
     'addTrack',
