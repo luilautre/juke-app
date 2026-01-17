@@ -84,6 +84,12 @@ function searchSC() {
   const q = encodeURIComponent(document.getElementById('search').value.trim());
   window.open(q?`https://soundcloud.com/search?q=${q}`:'https://soundcloud.com/explore','_blank','width=1000,height=700');
 }
+function envoyerFermer() {
+  window.opener.postMessage(
+  { type: "TRACK_ADDED", title: "OK" },
+  "*");
+  setTimeout(()=>window.close(),800);
+}
 
 // Ajout musique
 async function addMusic(){
@@ -97,7 +103,7 @@ async function addMusic(){
       document.getElementById('link').value='';
       document.getElementById('search').value='';
       // Si player=true : fermer la fenêtre
-      if(playerMode) setTimeout(()=>window.close(),800);
+      if(playerMode) setTimeout(()=>envoyerFermer(),800);
     }else{
       msg.textContent='❌ Erreur.';
     }

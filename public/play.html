@@ -63,9 +63,19 @@ const tracksEl = document.getElementById('tracks');
 const menuBtn = document.getElementById('menuBtn');
 const frame = document.getElementById('frame');
 
+window.addEventListener("message", (event) => {
+  if (event.data?.type === "TRACK_ADDED") {
+    console.log("Musique ajoutée :", event.data);
+
+    // exemple d'action
+    // refreshPlaylist();
+    // afficher un toast
+  }
+});
+
 const addBtn = document.getElementById('add');
 addBtn.onclick = () => {
-  window.open(
+  addWindow=window.open(
     'https://juke-app.vercel.app/ajouter.html?player=true',
     'addTrack',
     'width=500,height=600,top=100,left=100,resizable=yes,scrollbars=yes'
