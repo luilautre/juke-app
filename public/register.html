@@ -75,7 +75,7 @@
       text-decoration: none;
       margin-top: 10px;
     }
-    .qr-preview {
+    #qr-preview {
       text-align: center;
       margin-top: 30px;
       padding: 20px;
@@ -83,7 +83,7 @@
       border-radius: 14px;
       border: 1px dashed #2b2f3a;
     }
-    .qr-preview p {
+    #qr-preview p {
       color: var(--muted);
       font-size: 0.9rem;
     }
@@ -115,11 +115,17 @@
       <option>2 musiques / heure</option>
     </select>
 
-    <a href="#" class="cta">Générer mon QR code</a>
+    <a href="#" class="cta" id="register">Générer mon QR code</a>
 
-    <div class="qr-preview">
+    <div id="qr-preview">
       <p>Le QR code apparaîtra ici après configuration.</p>
     </div>
   </div>
+  <script>
+    function register(){
+      document.getElementById("qr-preview").innerHTML=""
+    }
+    document.getElementById("register").addEventListener("click", register);
+  </script>
 </body>
 </html>
