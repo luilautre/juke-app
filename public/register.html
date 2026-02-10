@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <link link rel="icon" type="image/png" href="/images/logo.png">
+  <link rel="icon" type="image/png" href="/images/logo.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="robots" content="noindex">
@@ -34,7 +34,7 @@
       background: var(--card);
       padding: 40px;
       border-radius: 20px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
     }
     h1 {
       font-size: 2rem;
@@ -74,6 +74,33 @@
       color: white;
       text-decoration: none;
       margin-top: 10px;
+      border: 0;
+      cursor: pointer;
+    }
+    .cta:hover {
+      filter: brightness(1.08);
+    }
+    .cta.secondary {
+      margin-top: 12px;
+      background: transparent;
+      border: 1px solid #3b4354;
+      color: var(--text);
+    }
+    .error {
+      color: var(--error);
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      min-height: 1.2em;
+    }
+    #qr-preview img {
+      display: block;
+      margin: 0 auto 12px;
+      width: 150px;
+      height: 150px;
+      border-radius: 12px;
+      background: #fff;
+      padding: 8px;
+      box-sizing: border-box;
     }
     #qr-preview {
       text-align: center;
@@ -82,6 +109,10 @@
       background: #0f1117;
       border-radius: 14px;
       border: 1px dashed #2b2f3a;
+    }
+    #qr-preview a {
+      color: #9bb0ff;
+      word-break: break-all;
     }
     #qr-preview p {
       color: var(--muted);
@@ -115,17 +146,63 @@
       <option>2 musiques / heure</option>
     </select>
 
-    <a href="#" class="cta" id="register">Générer mon QR code</a>
+    <p class="error" id="form-error" aria-live="polite"></p>
+    <button class="cta" id="register" type="button">Générer mon QR code</button>
 
     <div id="qr-preview">
       <p>Le QR code apparaîtra ici après configuration.</p>
     </div>
   </div>
+
   <script>
-    function register(){
-      document.getElementById("qr-preview").innerHTML=""
+    function normalizeVenueName(name) {
+      return name
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
     }
-    document.getElementById("register").addEventListener("click", register);
+
+    function buildQrApiUrl(data) {
+      const params = new URLSearchParams({
+        size: '150x150',
+        data,
+        bgcolor: '0000ff',
+        color: 'ffffff'
+      });
+      return `https://api.qrserver.com/v1/create-qr-code/?${params.toString()}`;
+    }
+
+    function register() {
+      const nameInput = document.getElementById('name');
+      const preview = document.getElementById('qr-preview');
+      const errorEl = document.getElementById('form-error');
+      const venueName = nameInput.value;
+
+      if (!venueName.trim()) {
+        errorEl.textContent = 'Veuillez renseigner le nom du lieu.';
+        preview.innerHTML = '<p>Le QR code apparaîtra ici après configuration.</p>';
+        nameInput.focus();
+        return;
+      }
+
+      errorEl.textContent = '';
+      const slug = normalizeVenueName(venueName) || 'mon-jukebox';
+      const shareUrl = `${window.location.origin}/ajouter?${new URLSearchParams({ 'café': slug }).toString()}`;
+      const playUrl = `${window.location.origin}/play?${new URLSearchParams({ cafe: slug }).toString()}`;
+      const qrSrc = buildQrApiUrl(shareUrl);
+
+      preview.innerHTML = `
+        <img src="${qrSrc}" alt="QR code pour ${venueName}">
+        <p>QR code prêt pour <strong>${venueName}</strong>.</p>
+        <a href="${shareUrl}" target="_blank" rel="noopener">${shareUrl}</a>
+        <a class="cta secondary" href="${playUrl}" target="_blank" rel="noopener">Ouvrir le player (/play)</a>
+      `;
+    }
+
+    document.getElementById('register').addEventListener('click', register);
   </script>
 </body>
 </html>
