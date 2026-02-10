@@ -169,8 +169,8 @@
       const params = new URLSearchParams({
         size: '150x150',
         data,
-        bgcolor: '0000ff',
-        color: 'ffffff'
+        bgcolor: 'ffffff',
+        color: '000000'
       });
       return `https://api.qrserver.com/v1/create-qr-code/?${params.toString()}`;
     }
