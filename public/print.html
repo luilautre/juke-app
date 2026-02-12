@@ -48,7 +48,6 @@
             border: 1px solid #242833;
             background: #0f1117;
             color: var(--text);
-            font-size: 1rem;
         }
         input[type="button"] {
             width: 100%;
@@ -74,14 +73,14 @@
                 background: white;
                 color: black;
             }
-            .print-hidden {
-                display: none; /* Cache les éléments lors de l'impression */
+            .container {
+                display: none; /* Cache tout le conteneur lors de l'impression */
             }
             img {
                 display: block; /* Affiche l'image correctement */
                 width: 100%; /* S'adapte à la largeur de la page d'impression */
                 height: auto; /* Garde le ratio de l'image */
-                margin-bottom: 20px; /* Ajouter de l'espace sous l'image */
+                margin: 0 auto; /* Centre l'image */
             }
         }
     </style>
@@ -114,5 +113,6 @@
     </script>
 </body>
 </html>
+
 
 
