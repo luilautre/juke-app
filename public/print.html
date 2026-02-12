@@ -114,7 +114,7 @@
         <label for="color">Couleur du QR Code :</label>
         <input type="color" id="color" value="#000000" onchange="updateQRCode()">
         </div>
-        <img id="image" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150" alt="Code QR à Imprimer">
+        <img id="image" src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000" alt="Code QR à Imprimer">
         
         <div class="containerin">
             <input type="button" value="Imprimer" onClick="window.print()" class="cta"/>
@@ -130,7 +130,7 @@
             const cafe = params.get('cafe') || params.get('café') || 'default';
             
             const image = document.getElementById('image');
-            image.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fjuke-app.vercel.app%2Fajouter%3Fcaf%25C3%25A9%3D${cafe}&bgcolor=${bgcolor}&color=${color}`;
+            image.src = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2Fjuke-app.vercel.app%2Fajouter%3Fcaf%25C3%25A9%3D${cafe}&bgcolor=${bgcolor}&color=${color}`;
         }
         updateQRCode(); 
     </script>
