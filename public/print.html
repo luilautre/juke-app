@@ -5,15 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Imprimer l'image</title>
     <style>
-      img {diplay:none}
         @media print {
+            @page {
+                margin: 0; /* Supprime les marges de la page */
+            }
             body {
                 margin: 0;
                 padding: 0;
             }
-            .print-hidden {display: none}
+            .print-hidden {
+                display: none; /* Cache les éléments lorsque l'on imprime */
+            }
             img {
-                display: block
+                display: block; /* Affiche l'image correctement */
                 width: 100%; /* S'adapte à la largeur de la page d'impression */
                 height: auto; /* Garde le ratio de l'image */
             }
@@ -21,9 +25,10 @@
     </style>
 </head>
 <body>
-    <img id="image" src="URL_DE_TA_IMAGE">
+    <img id="image" src="URL_DE_TA_IMAGE" alt="Image à Imprimer">
     <div class="print-hidden">
-    <input type="button" value="Imprimer" onClick="window.print()" />
+        <input type="button" value="Imprimer" onClick="window.print()" />
     </div>
 </body>
 </html>
+
