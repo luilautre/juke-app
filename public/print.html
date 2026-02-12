@@ -5,6 +5,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Imprimer le Code QR</title>
     <style>
+        :root {
+      --bg: #0d0f14;
+      --card: #151820;
+      --accent: #5c7cfa;
+      --text: #f2f4f8;
+      --muted: #8b93a3;
+      --error: #ff6b6b;
+    }
+    body {
+      margin: 0;
+      font-family: Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    p {
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    input, select {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      border: 1px solid #242833;
+      background: #0f1117;
+      color: var(--text);
+      font-size: 1rem;
+    }
+    input:focus, select:focus {
+      outline: 2px solid var(--accent);
+    }
+    .cta {
+      width: 100%;
+      display: block;
+      text-align: center;
+      padding: 16px;
+      background: var(--accent);
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: white;
+      text-decoration: none;
+      margin-top: 10px;
+      border: 0;
+      cursor: pointer;
+    }
+    .cta:hover {
+      filter: brightness(1.08);
+    }
+    .cta.secondary {
+      margin-top: 12px;
+      background: transparent;
+      border: 1px solid #3b4354;
+      color: var(--text);
+    }
+    .error {
+      color: var(--error);
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      min-height: 1.2em;
+    }
         @media print {
             @page {
                 margin: 0; /* Supprime les marges de la page */
@@ -27,7 +109,7 @@
 <body>
     <img id="image" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fjuke-app.vercel.app%2Fajouter%3Fcaf%25C3%25A9%3Dexemple&bgcolor=ffffff&color=000000" alt="Code QR à Imprimer">
     <div class="print-hidden">
-        <input type="button" value="Imprimer" onClick="window.print()" />
+        <input type="button" value="Imprimer" onClick="window.print()" class="cta"/>
     </div>
 </body>
 </html>
