@@ -30,7 +30,7 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
-            text-align: center; /* Centre le texte */
+            text-align: center;
         }
         h1 {
             font-size: 2rem;
@@ -73,8 +73,17 @@
                 background: white;
                 color: black;
             }
-            .container {
+            .containerin {
                 display: none; /* Cache tout le conteneur lors de l'impression */
+            }
+            .container {
+                width: 100%;
+                max-width: 480px;
+                background: #fff;
+                padding: 0px;
+                border-radius: 0px;
+                box-shadow: 0;
+                text-align: center;
             }
             img {
                 display: block; /* Affiche l'image correctement */
@@ -83,18 +92,19 @@
                 margin: 0 auto; /* Centre l'image */
                 page-break-inside: avoid; /* Évite les coupures à l'intérieur de l'image */
             }
-            .container img {
-                display: block; /* Affiche l'image correctement */
-                width: 100%; /* S'adapte à la largeur de la page d'impression */
-                height: auto; /* Garde le ratio de l'image */
-                margin: 0 auto; /* Centre l'image */
-                page-break-inside: avoid; /* Évite les coupures à l'intérieur de l'image */
-            }
+            /*.container img {
+                display: block;
+                width: 100%;
+                height: auto;
+                margin: 0 auto;
+                page-break-inside: avoid;
+            }*/
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="containerin">
         <h1>Impression du Code QR</h1>
         <p>Choisissez les couleurs du code QR :</p>
         
