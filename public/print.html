@@ -107,12 +107,15 @@
         function updateQRCode() {
             const bgcolor = document.getElementById('bgcolor').value.slice(1); // Récupère la couleur de fond
             const color = document.getElementById('color').value.slice(1); // Récupère la couleur du QR Code
+
+            // Supposons que tu veuilles utiliser un paramètre de l'URL
+            const params = new URLSearchParams(window.location.search);
+            const cafe = params.get('café') || 'default'; // Récupère le paramètre café ou utilise 'default'
+            
             const image = document.getElementById('image');
-            image.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fjuke-app.vercel.app%2Fajouter%3Fcaf%25C3%25A9%3Dexemple&bgcolor=${bgcolor}&color=${color}`;
+            image.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fjuke-app.vercel.app%2Fajouter%3Fcaf%25C3%25A9%3D${cafe}&bgcolor=${bgcolor}&color=${color}`;
         }
+        updateQRCode(); // Met à jour le QR code au chargement initial
     </script>
 </body>
 </html>
-
-
-
