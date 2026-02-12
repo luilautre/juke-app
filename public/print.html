@@ -30,6 +30,7 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+            text-align: center; /* Centre le texte */
         }
         h1 {
             font-size: 2rem;
@@ -37,16 +38,31 @@
         }
         p {
             color: var(--muted);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
-        .print-hidden {
-            display: none; /* Cache les éléments lors de l'impression */
+        input[type="color"] {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 1px solid #242833;
+            background: #0f1117;
+            color: var(--text);
+            font-size: 1rem;
         }
-        img {
-            display: block; /* Affiche l'image correctement */
-            width: 100%; /* S'adapte à la largeur de la page d'impression */
-            height: auto; /* Garde le ratio de l'image */
-            margin-bottom: 20px; /* Ajouter de l'espace sous l'image */
+        input[type="button"] {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 10px; /* Espace entre le bouton et le code QR */
+            border-radius: 12px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        input[type="button"]:hover {
+            filter: brightness(1.08);
         }
         @media print {
             @page {
@@ -55,11 +71,17 @@
             body {
                 margin: 0;
                 padding: 0;
-                background: white; /* Fond blanc pour l'impression */
-                color: black; /* Texte noir pour l'impression */
+                background: white;
+                color: black;
             }
             .print-hidden {
                 display: none; /* Cache les éléments lors de l'impression */
+            }
+            img {
+                display: block; /* Affiche l'image correctement */
+                width: 100%; /* S'adapte à la largeur de la page d'impression */
+                height: auto; /* Garde le ratio de l'image */
+                margin-bottom: 20px; /* Ajouter de l'espace sous l'image */
             }
         }
     </style>
@@ -67,12 +89,30 @@
 <body>
     <div class="container">
         <h1>Impression du Code QR</h1>
-        <p>Voici votre code QR. Cliquez sur le bouton pour l'imprimer.</p>
+        <p>Choisissez les couleurs du code QR :</p>
+        
+        <label for="bgcolor">Couleur de fond :</label>
+        <input type="color" id="bgcolor" value="#ffffff" onchange="updateQRCode()">
+        
+        <label for="color">Couleur du QR Code :</label>
+        <input type="color" id="color" value="#000000" onchange="updateQRCode()">
+
         <img id="image" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fjuke-app.vercel.app%2Fajouter%3Fcaf%25C3%25A9%3Dexemple&bgcolor=ffffff&color=000000" alt="Code QR à Imprimer">
+        
         <div class="print-hidden">
             <input type="button" value="Imprimer" onClick="window.print()" class="cta"/>
         </div>
     </div>
+
+    <script>
+        function updateQRCode() {
+            const bgcolor = document.getElementById('bgcolor').value.slice(1); // Récupère la couleur de fond
+            const color = document.getElementById('color').value.slice(1); // Récupère la couleur du QR Code
+            const image = document.getElementById('image');
+            image.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fjuke-app.vercel.app%2Fajouter%3Fcaf%25C3%25A9%3Dexemple&bgcolor=${bgcolor}&color=${color}`;
+        }
+    </script>
 </body>
 </html>
+
 
