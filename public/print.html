@@ -1,139 +1,185 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imprimer le Code QR</title>
-    <style>
-        :root {
-            --bg: #0d0f14;
-            --card: #151820;
-            --accent: #5c7cfa;
-            --text: #f2f4f8;
-            --muted: #8b93a3;
-            --error: #ff6b6b;
-        }
-        body {
-            margin: 0;
-            font-family: Inter, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
-        }
-        .container {
-            width: 100%;
-            max-width: 480px;
-            background: var(--card);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
-            text-align: center;
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-        p {
-            color: var(--muted);
-            margin-bottom: 20px;
-        }
-        input[type="color"] {
-            width: 100%;
-            padding: 14px;
-            margin-bottom: 20px;
-            border-radius: 12px;
-            border: 1px solid #242833;
-            background: #0f1117;
-            color: var(--text);
-        }
-        input[type="button"] {
-            width: 100%;
-            padding: 14px;
-            margin-bottom: 10px; /* Espace entre le bouton et le code QR */
-            border-radius: 12px;
-            border: none;
-            background: var(--accent);
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-        input[type="button"]:hover {
-            filter: brightness(1.08);
-        }
-        @media print {
-            @page {
-                margin: 0; /* Supprime les marges de la page */
-            }
-            body {
-                margin: 0;
-                padding: 0;
-                background: white;
-                color: black;
-            }
-            .containerin {
-                display: none; /* Cache tout le conteneur lors de l'impression */
-            }
-            .container {
-                width: 100%;
-                max-width: 480px;
-                background: #fff;
-                padding: 0px;
-                border-radius: 0px;
-                box-shadow: 0;
-                text-align: center;$
-                max-width: 480px;
-            }
-            img {
-                display: block; /* Affiche l'image correctement */
-                width: 6.5cm;
-                height: auto;
-                margin: 0 auto; /* Centre l'image */
-                page-break-inside: avoid; /* Évite les coupures à l'intérieur de l'image */
-            }
-            /*.container img {
-                display: block;
-                width: 100%;
-                height: auto;
-                margin: 0 auto;
-                page-break-inside: avoid;
-            }*/
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Imprimer le Code QR</title>
+
+<style>
+:root {
+    --bg: #0d0f14;
+    --card: #151820;
+    --accent: #5c7cfa;
+    --text: #f2f4f8;
+    --muted: #8b93a3;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 480px;
+    background: var(--card);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+p {
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+
+input[type="color"] {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    border: 1px solid #242833;
+    background: #0f1117;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:hover {
+    filter: brightness(1.08);
+}
+
+/* Aperçu écran */
+.preview {
+    width: 200px;
+    margin: 20px auto;
+    display: block;
+}
+
+/* --- IMPRESSION --- */
+@media print {
+
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
+    body {
+        background: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    .no-print {
+        display: none;
+    }
+
+    .container {
+        display: grid;
+        grid-template-columns: repeat(3, 6.5cm);
+        grid-auto-rows: 6.5cm;
+        justify-content: center;
+        align-content: center;
+        width: 21cm;
+        height: 29.7cm;
+        padding: 0;
+        box-shadow: none;
+        background: white;
+    }
+
+    .print-qr {
+        width: 6.5cm;
+        height: 6.5cm;
+    }
+}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="containerin">
-        <h1>Impression du Code QR</h1>
-        <p>Choisissez les couleurs du code QR :</p>
-        
-        <label for="bgcolor">Couleur de fond :</label>
-        <input type="color" id="bgcolor" value="#ffffff" onchange="updateQRCode()">
-        
-        <label for="color">Couleur du QR Code :</label>
-        <input type="color" id="color" value="#000000" onchange="updateQRCode()">
-        </div>
-        <img id="image" src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000" alt="Code QR à Imprimer">
-        
-        <div class="containerin">
-            <input type="button" value="Imprimer" onClick="window.print()" class="cta"/>
-        </div>
-    </div>
 
-    <script>
-        function updateQRCode() {
-            const bgcolor = document.getElementById('bgcolor').value.slice(1); // Récupère la couleur de fond
-            const color = document.getElementById('color').value.slice(1); // Récupère la couleur du QR Code
+<div class="container">
 
-            const params = new URLSearchParams(window.location.search);
-            const cafe = params.get('cafe') || params.get('café') || 'default';
-            
-            const image = document.getElementById('image');
-            image.src = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2Fjuke-app.vercel.app%2Fajouter%3Fcaf%25C3%25A9%3D${cafe}&bgcolor=${bgcolor}&color=${color}`;
-        }
-        updateQRCode(); 
-    </script>
+<div class="no-print">
+    <h1>Impression du Code QR</h1>
+    <p>Choisissez les couleurs :</p>
+
+    <label>Couleur de fond :</label>
+    <input type="color" id="bgcolor" value="#ffffff">
+
+    <label>Couleur du QR :</label>
+    <input type="color" id="color" value="#000000">
+
+    <img id="preview" class="preview"
+        src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000"
+        alt="Aperçu QR">
+
+    <button onclick="printQRCodes()">Imprimer (12 QR)</button>
+</div>
+
+</div>
+
+<script>
+function generateQRUrl() {
+    const bgcolor = document.getElementById('bgcolor').value.slice(1);
+    const color = document.getElementById('color').value.slice(1);
+
+    const params = new URLSearchParams(window.location.search);
+    const cafe = params.get('cafe') || params.get('café') || 'default';
+    const cafeEncoded = encodeURIComponent(cafe);
+
+    return `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&data=https%3A%2F%2Fjuke-app.vercel.app%2Fajouter%3Fcaf%25C3%25A9%3D${cafeEncoded}&bgcolor=${bgcolor}&color=${color}`;
+}
+
+function updatePreview() {
+    document.getElementById('preview').src = generateQRUrl();
+}
+
+function printQRCodes() {
+
+    const container = document.querySelector('.container');
+
+    // Nettoyage anciens QR
+    document.querySelectorAll('.print-qr').forEach(el => el.remove());
+
+    const qrUrl = generateQRUrl();
+
+    for (let i = 0; i < 12; i++) {
+        const img = document.createElement('img');
+        img.src = qrUrl;
+        img.className = 'print-qr';
+        container.appendChild(img);
+    }
+
+    window.print();
+
+    // Nettoyage après impression
+    document.querySelectorAll('.print-qr').forEach(el => el.remove());
+}
+
+document.getElementById('bgcolor').addEventListener('input', updatePreview);
+document.getElementById('color').addEventListener('input', updatePreview);
+
+updatePreview();
+</script>
+
 </body>
 </html>
