@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imprimer l'image</title>
+    <title>Imprimer le Code QR</title>
     <style>
         @media print {
             @page {
@@ -14,7 +14,7 @@
                 padding: 0;
             }
             .print-hidden {
-                display: none; /* Cache les éléments lorsque l'on imprime */
+                display: none; /* Cache les éléments lors de l'impression */
             }
             img {
                 display: block; /* Affiche l'image correctement */
@@ -25,10 +25,9 @@
     </style>
 </head>
 <body>
-    <img id="image" src="URL_DE_TA_IMAGE" alt="Image à Imprimer">
+    <img id="image" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fjuke-app.vercel.app%2Fajouter%3Fcaf%25C3%25A9%3Dexemple&bgcolor=ffffff&color=000000" alt="Code QR à Imprimer">
     <div class="print-hidden">
         <input type="button" value="Imprimer" onClick="window.print()" />
     </div>
 </body>
 </html>
-
