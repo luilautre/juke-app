@@ -35,20 +35,17 @@ body {
     text-align: center;
 }
 
-h1 {
-    margin-bottom: 10px;
-}
-
-p {
-    color: var(--muted);
-    margin-bottom: 20px;
+.preview {
+    width: 150px; /* aperçu plus petit */
+    margin: 20px auto;
+    display: block;
 }
 
 input[type="color"] {
     width: 100%;
-    padding: 14px;
+    padding: 12px;
     margin-bottom: 20px;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 1px solid #242833;
     background: #0f1117;
 }
@@ -68,14 +65,8 @@ button:hover {
     filter: brightness(1.08);
 }
 
-/* Aperçu écran */
-.preview {
-    width: 200px;
-    margin: 20px auto;
-    display: block;
-}
+/* ---------- IMPRESSION ---------- */
 
-/* --- IMPRESSION --- */
 @media print {
 
     @page {
@@ -84,9 +75,9 @@ button:hover {
     }
 
     body {
-        background: white;
         margin: 0;
         padding: 0;
+        background: white;
     }
 
     .no-print {
@@ -94,21 +85,22 @@ button:hover {
     }
 
     .container {
+        width: 210mm;
+        height: 297mm;
         display: grid;
-        grid-template-columns: repeat(3, 6.5cm);
-        grid-auto-rows: 6.5cm;
+        grid-template-columns: repeat(3, 60mm);
+        grid-auto-rows: 60mm;
+        gap: 5mm;
         justify-content: center;
         align-content: center;
-        width: 21cm;
-        height: 29.7cm;
         padding: 0;
         box-shadow: none;
         background: white;
     }
 
     .print-qr {
-        width: 6.5cm;
-        height: 6.5cm;
+        width: 60mm;
+        height: 60mm;
     }
 }
 </style>
@@ -119,8 +111,7 @@ button:hover {
 <div class="container">
 
 <div class="no-print">
-    <h1>Impression du Code QR</h1>
-    <p>Choisissez les couleurs :</p>
+    <h2>Impression QR 60mm</h2>
 
     <label>Couleur de fond :</label>
     <input type="color" id="bgcolor" value="#ffffff">
@@ -154,10 +145,8 @@ function updatePreview() {
 }
 
 function printQRCodes() {
-
     const container = document.querySelector('.container');
 
-    // Nettoyage anciens QR
     document.querySelectorAll('.print-qr').forEach(el => el.remove());
 
     const qrUrl = generateQRUrl();
@@ -171,7 +160,6 @@ function printQRCodes() {
 
     window.print();
 
-    // Nettoyage après impression
     document.querySelectorAll('.print-qr').forEach(el => el.remove());
 }
 
@@ -183,3 +171,4 @@ updatePreview();
 
 </body>
 </html>
+
