@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imprimer l'image</title>
+    <style>
+      img {diplay:none}
+        @media print {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            .print-hidden {display: none}
+            img {
+                display: block
+                width: 100%; /* S'adapte à la largeur de la page d'impression */
+                height: auto; /* Garde le ratio de l'image */
+            }
+        }
+    </style>
+</head>
+<body>
+    <img id="image" src="URL_DE_TA_IMAGE">
+    <div class="print-hidden">
+    <input type="button" value="Imprimer" onClick="window.print()" />
+    </div>
+
+    <script>
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>
