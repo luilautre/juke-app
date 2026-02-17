@@ -195,7 +195,7 @@
       const qrSrc = buildQrApiUrl(shareUrl);
 
       preview.innerHTML = `
-        <a href="https://juke-app.vercel.app/print.html?${new URLSearchParams({ 'café': slug }).toString()}" target="_blank">Imprimer le QR code<br><img src="${qrSrc}" alt="QR code pour ${venueName}"></a>
+        <a href="https://juke-app.vercel.app/print.html?${new URLSearchParams({ 'café': slug }).toString()}" target="_blank"><p>Imprimer le QR code</p><img src="${qrSrc}" alt="QR code pour ${venueName}"></a>
         <p>QR code prêt pour <strong>${venueName}</strong>.</p>
         <a class="cta secondary" href="${playUrl}" target="_blank" rel="noopener">Ouvrir le player (/play)</a>
       `;
