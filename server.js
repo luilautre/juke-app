@@ -4,7 +4,6 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
 const { createClient } = require('@supabase/supabase-js');
-const { verify } = require('hcaptcha');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -57,28 +56,11 @@ function detectSource(link){
   return 'unknown';
 }
 
-app.post('/verify-captcha', async (req, res) => {
-  const token = req.body['h-captcha-response'];
-  if (!token) return res.status(400).json({ error: 'Captcha manquant' });
-
-  try {
-    const data = await verify(process.env.HCAPTCHA_SECRET, token);
-    if (data.success) {
-      res.json({ ok: true });
-    } else {
-      res.status(403).json({ error: 'Captcha invalide' });
-    }
-  } catch (err) {
-    res.status(500).json({ error: 'Erreur vérification captcha' });
-  }
-});
-
 // ====== Pages ======
 app.get('/', (req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
 app.get('/ajouter', (req,res)=>res.sendFile(path.join(__dirname,'public','ajouter.html')));
 app.get('/licence', (req,res)=>res.sendFile(path.join(__dirname,'public','licence.html')));
 app.get('/register', (req,res)=>res.sendFile(path.join(__dirname,'public','register.html')));
-app.get('/captcha', (req,res)=>res.sendFile(path.join(__dirname,'public','captcha.html')));// à enlever SI TU LIS CA PREVIENS MOI
 app.get('/play', (req,res)=>{
   const cafe = req.query.café || req.query.cafe || 'default';
   ensureCafe(cafe);
