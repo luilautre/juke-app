@@ -75,9 +75,10 @@ app.post('/verify-captcha', async (req, res) => {
 
 // ====== Pages ======
 app.get('/', (req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
-app.get('/ajouter', (req,res)=>res.sendFile(path.join(__dirname,'public','ajouter.html'))); // inchangé
+app.get('/ajouter', (req,res)=>res.sendFile(path.join(__dirname,'public','ajouter.html')));
 app.get('/licence', (req,res)=>res.sendFile(path.join(__dirname,'public','licence.html')));
 app.get('/register', (req,res)=>res.sendFile(path.join(__dirname,'public','register.html')));
+app.get('/captcha', (req,res)=>res.sendFile(path.join(__dirname,'public','captcha.html')));// à enlever SI TU LIS CA PREVIENS MOI
 app.get('/play', (req,res)=>{
   const cafe = req.query.café || req.query.cafe || 'default';
   ensureCafe(cafe);
