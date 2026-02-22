@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const fs = require('fs');
 const { createClient } = require('@supabase/supabase-js');
+const { verify } = require('hcaptcha');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -55,6 +56,22 @@ function detectSource(link){
   if(link.includes('soundcloud.com')) return 'soundcloud';
   return 'unknown';
 }
+
+app.post('/verify-captcha', async (req, res) => {
+  const token = req.body['h-captcha-response'];
+  if (!token) return res.status(400).json({ error: 'Captcha manquant' });
+
+  try {
+    const data = await verify(process.env.HCAPTCHA_SECRET, token);
+    if (data.success) {
+      res.json({ ok: true });
+    } else {
+      res.status(403).json({ error: 'Captcha invalide' });
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Erreur vérification captcha' });
+  }
+});
 
 // ====== Pages ======
 app.get('/', (req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
